@@ -13,6 +13,10 @@ import {
 } from "@/lib/chat";
 import { StackedList } from "@/components/ui/stacked-list";
 import { cn } from "@/lib/utils";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { AppIcon } from "@/components/AppIcon";
+import { askSupport } from "@/lib/support.functions";
 
 export const Route = createFileRoute("/chat")({
   validateSearch: (s: Record<string, unknown>): { c?: string | undefined } => ({
