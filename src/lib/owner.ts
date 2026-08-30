@@ -43,33 +43,47 @@ export async function fetchMyBusiness(userId: string): Promise<BusinessRow | nul
 
 /**
  * Update the caller's business profile when it exists, otherwise insert it.
- * A plain `upsert` conflicts on the primary key (id), so partial patches keyed
- * only by user_id tried to insert a duplicate row and failed.
+ * `user_id` is UNIQUE, so a conflict-aware upsert on that column is the safe
+ * single round-trip. Undefined keys are stripped so partial step patches never
+ * blank out previously saved fields.
  */
 export async function upsertBusiness(patch: Partial<BusinessRow> & { user_id: string }) {
+  const clean = Object.fromEntries(
+    Object.entries(patch).filter(([, v]) => v !== undefined),
+  ) as Partial<BusinessRow> & { user_id: string };
+
   const { data: existing, error: findError } = await supabase
     .from("business_profiles")
     .select("id")
-    .eq("user_id", patch.user_id)
-    .maybeSingle();
-  if (findError) throw findError;
+    .eq("user_id", clean.user_id)
+    .limit(1);
+  if (findError) throw new Error(findError.message);
 
-  if (existing) {
-    const { user_id: _ignored, ...rest } = patch;
+  const row = existing?.[0];
+  if (row) {
+    const { user_id: _ignored, id: _id, created_at: _c, ...rest } = clean as Record<string, unknown> &
+      Partial<BusinessRow>;
+    if (Object.keys(rest).length === 0) return;
     const { error } = await supabase
       .from("business_profiles")
       .update(rest as unknown as Tables["business_profiles"]["Update"])
-      .eq("id", existing.id);
-    if (error) throw error;
+      .eq("id", row.id);
+    if (error) throw new Error(error.message);
     return;
   }
 
-  const { error } = await supabase.from("business_profiles").insert({
-    ...patch,
-    display_name: patch.display_name ?? "My business",
-  } as unknown as Tables["business_profiles"]["Insert"]);
-  if (error) throw error;
+  const { error } = await supabase
+    .from("business_profiles")
+    .upsert(
+      {
+        ...clean,
+        display_name: clean.display_name ?? "My business",
+      } as unknown as Tables["business_profiles"]["Insert"],
+      { onConflict: "user_id" },
+    );
+  if (error) throw new Error(error.message);
 }
+
 
 /* ---------------- catalogs ---------------- */
 
