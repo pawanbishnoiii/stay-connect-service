@@ -65,6 +65,14 @@ type FormState = {
   locality: string;
   state: string;
   pincode: string;
+  district: string;
+  village: string;
+  lat: string;
+  lng: string;
+  location_confirmed: boolean;
+  accepted_terms: boolean;
+  accepted_refund_policy: boolean;
+
   listingTitle: string;
   description: string;
   price: string;
