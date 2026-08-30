@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { reverseGeocodeDetail } from "@/lib/geo";
 import {
   fetchMyBusiness,
   upsertBusiness,
@@ -65,6 +66,14 @@ type FormState = {
   locality: string;
   state: string;
   pincode: string;
+  district: string;
+  village: string;
+  lat: string;
+  lng: string;
+  location_confirmed: boolean;
+  accepted_terms: boolean;
+  accepted_refund_policy: boolean;
+
   listingTitle: string;
   description: string;
   price: string;
@@ -93,6 +102,14 @@ const INITIAL: FormState = {
   locality: "",
   state: "",
   pincode: "",
+  district: "",
+  village: "",
+  lat: "",
+  lng: "",
+  location_confirmed: false,
+  accepted_terms: false,
+  accepted_refund_policy: false,
+
   listingTitle: "",
   description: "",
   price: "",
@@ -120,6 +137,7 @@ function OnboardingPage() {
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(true);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [detecting, setDetecting] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -148,6 +166,14 @@ function OnboardingPage() {
             locality: biz.locality ?? "",
             state: biz.state ?? "",
             pincode: biz.pincode ?? "",
+            district: biz.district ?? "",
+            village: biz.village ?? "",
+            lat: biz.lat != null ? String(biz.lat) : "",
+            lng: biz.lng != null ? String(biz.lng) : "",
+            location_confirmed: Boolean(biz.location_confirmed),
+            accepted_terms: Boolean(biz.accepted_terms),
+            accepted_refund_policy: Boolean(biz.accepted_refund_policy),
+
           }));
           if (biz.onboarding_complete) setDone(true);
           else setStep(Math.max(0, Math.min((biz.onboarding_step ?? 1) - 1, 3)));
@@ -191,6 +217,39 @@ function OnboardingPage() {
     }
   }
 
+  async function detectLocation() {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      toast.error("Your browser does not support location. Fill the address manually.");
+      return;
+    }
+    setDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const point = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        const detail = await reverseGeocodeDetail(point).catch(() => null);
+        setForm((f) => ({
+          ...f,
+          lat: String(point.lat),
+          lng: String(point.lng),
+          city: detail?.city || f.city,
+          locality: detail?.locality || f.locality,
+          state: detail?.state || f.state,
+          pincode: detail?.pincode || f.pincode,
+          district: detail?.district || f.district,
+          village: detail?.village || f.village,
+          address: detail?.address || f.address,
+        }));
+        setDetecting(false);
+        toast.success("Location detected — please check and correct the fields.");
+      },
+      () => {
+        setDetecting(false);
+        toast.error("Location permission blocked. Search your area or fill it manually.");
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 },
+    );
+  }
+
   async function saveStep2(e: FormEvent) {
     e.preventDefault();
     if (!user) return;
@@ -198,24 +257,48 @@ function OnboardingPage() {
       toast.error("Please choose a category");
       return;
     }
+    if (!form.city.trim()) {
+      toast.error("City is required");
+      return;
+    }
+    if (!form.location_confirmed) {
+      toast.error("Please confirm your location is correct");
+      return;
+    }
+    if (!form.accepted_terms || !form.accepted_refund_policy) {
+      toast.error("Please accept the terms and refund policy");
+      return;
+    }
     setBusy(true);
     try {
       await upsertBusiness({
         user_id: user.id,
         primary_category_id: form.primary_category_id,
-        city: form.city || null,
-        locality: form.locality || null,
-        state: form.state || null,
-        pincode: form.pincode || null,
+        city: form.city.trim() || null,
+        locality: form.locality.trim() || null,
+        state: form.state.trim() || null,
+        pincode: form.pincode.trim() || null,
+        district: form.district.trim() || null,
+        village: form.village.trim() || null,
+        lat: form.lat ? Number(form.lat) : null,
+        lng: form.lng ? Number(form.lng) : null,
+        location_confirmed: true,
+        accepted_terms: true,
+        accepted_refund_policy: true,
         onboarding_step: 3,
       });
       setStep(2);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not save category & location");
+      toast.error(
+        err instanceof Error
+          ? `Could not save category & location: ${err.message}`
+          : "Could not save category & location",
+      );
     } finally {
       setBusy(false);
     }
   }
+
 
   async function saveStep3(e: FormEvent) {
     e.preventDefault();
@@ -447,6 +530,37 @@ function OnboardingPage() {
               );
             })}
           </div>
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold">Business location</p>
+                <p className="text-xs text-muted-foreground">
+                  Fetch live location — city, PIN, state, district and colony fill automatically.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void detectLocation()}
+                disabled={detecting}
+              >
+                {detecting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Use my location"}
+              </Button>
+            </div>
+
+            {form.lat && form.lng ? (
+              <div className="mt-3 overflow-hidden rounded-xl border border-border">
+                <iframe
+                  title="Business location pin"
+                  className="h-48 w-full"
+                  loading="lazy"
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${Number(form.lng) - 0.006}%2C${Number(form.lat) - 0.004}%2C${Number(form.lng) + 0.006}%2C${Number(form.lat) + 0.004}&layer=mapnik&marker=${form.lat}%2C${form.lng}`}
+                />
+              </div>
+            ) : null}
+          </div>
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="ob-city">City *</Label>
@@ -458,12 +572,30 @@ function OnboardingPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="ob-loc">Locality</Label>
+              <Label htmlFor="ob-loc">Locality / Colony</Label>
               <Input
                 id="ob-loc"
                 value={form.locality}
                 onChange={(e) => set("locality", e.target.value)}
                 placeholder="Mansarovar"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ob-village">Village</Label>
+              <Input
+                id="ob-village"
+                value={form.village}
+                onChange={(e) => set("village", e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ob-district">District</Label>
+              <Input
+                id="ob-district"
+                value={form.district}
+                onChange={(e) => set("district", e.target.value)}
+                placeholder="Jaipur"
               />
             </div>
             <div className="space-y-1.5">
@@ -485,7 +617,39 @@ function OnboardingPage() {
               />
             </div>
           </div>
+
+          <div className="space-y-2 rounded-2xl border border-border bg-muted/30 p-4 text-sm">
+            <label className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={form.location_confirmed}
+                onChange={(e) => set("location_confirmed", e.target.checked)}
+              />
+              <span>I have checked and confirm this location is correct.</span>
+            </label>
+            <label className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={form.accepted_terms}
+                onChange={(e) => set("accepted_terms", e.target.checked)}
+              />
+              <span>I accept the terms of service and privacy policy.</span>
+            </label>
+            <label className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={form.accepted_refund_policy}
+                onChange={(e) => set("accepted_refund_policy", e.target.checked)}
+              />
+              <span>I accept the refund &amp; cancellation policy.</span>
+            </label>
+          </div>
+
           <StepFooter busy={busy} onBack={() => setStep(0)} />
+
         </form>
       ) : null}
 
