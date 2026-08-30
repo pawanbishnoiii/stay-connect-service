@@ -101,14 +101,24 @@ function ChatPage() {
     );
   }
 
-  const items = (conversations.data ?? []).map((cv) => ({
-    id: cv.id,
-    title: cv.peerName,
-    subtitle: cv.last_message || cv.listingTitle || "Say hello 👋",
-    meta: timeAgo(cv.last_message_at),
-    avatar: cv.peerAvatar,
-    badge: cv.unread,
-  }));
+  const items = [
+    {
+      id: SUPPORT_ID,
+      title: "LocalSpot Support",
+      subtitle: "Ask anything — bookings, listings, refunds",
+      meta: "24×7",
+      avatar: "/icons/support.png",
+      badge: 0,
+    },
+    ...(conversations.data ?? []).map((cv) => ({
+      id: cv.id,
+      title: cv.peerName,
+      subtitle: cv.last_message || cv.listingTitle || "Say hello 👋",
+      meta: timeAgo(cv.last_message_at),
+      avatar: cv.peerAvatar,
+      badge: cv.unread,
+    })),
+  ];
 
   return (
     <div className="mx-auto max-w-6xl px-0 py-0 sm:px-4 sm:py-5">
