@@ -7,8 +7,8 @@
 - [x] Map: "Near me" button, live toggle, you-are-here pin
 
 ## Next (agreed batches)
-- [ ] Messages: fix threads, remove Notifications page, add AI "Support" thread (Hindi/English, admin prompts)
-- [ ] Listing page: owner name, real ratings w/ multi image+video upload, offers, rules, facilities, Google Maps link, Schedule a Visit (physical/video) → owner leads, similar properties, suggestion mix %
+- [x] Messages: Notifications page removed, AI "Support" thread (Hindi/English, admin prompts) pinned in Messages
+- [x] Listing page: owner name, real ratings w/ multi image+video upload, offers, rules, room facilities, location map + Google Maps link, Schedule a Visit (physical/video), similar properties w/ suggestion mix %
 - [ ] Owner category forms: accommodation type, food menu by weekday, laundry pricing, PG (gopgo-style) options
 - [ ] Owner dashboards: library seats/shifts/students/credit/reminders, gym expenses (rent, bills, salary)
 - [ ] Admin: users/owners/vendors management, last-seen + time spent, AI prompts, dynamic logo, suggestion %
