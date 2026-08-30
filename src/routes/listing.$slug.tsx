@@ -142,7 +142,7 @@ function ListingDetail() {
         .single();
       if (error) throw error;
       toast.success("Conversation started");
-      void navigate({ to: "/chat" });
+      void navigate({ to: "/chat", search: {} });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not start chat");
     } finally {
