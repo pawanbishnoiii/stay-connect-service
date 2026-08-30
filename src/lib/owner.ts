@@ -42,7 +42,9 @@ export async function fetchMyBusiness(userId: string): Promise<BusinessRow | nul
 }
 
 export async function upsertBusiness(patch: Partial<BusinessRow> & { user_id: string }) {
-  const { error } = await supabase.from("business_profiles").upsert(patch);
+  const { error } = await supabase
+    .from("business_profiles")
+    .upsert(patch as unknown as Tables["business_profiles"]["Insert"]);
   if (error) throw error;
 }
 
