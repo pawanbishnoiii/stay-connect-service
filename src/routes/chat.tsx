@@ -299,3 +299,115 @@ function Thread({
     </>
   );
 }
+
+type SupportRow = { id: string; role: string; content: string; created_at: string };
+
+function SupportThread({ onBack }: { onBack: () => void }) {
+  const qc = useQueryClient();
+  const ask = useServerFn(askSupport);
+  const [text, setText] = useState("");
+  const [sending, setSending] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const { data, isPending } = useQuery({
+    queryKey: ["support-messages"],
+    queryFn: async (): Promise<SupportRow[]> => {
+      const { data, error } = await supabase
+        .from("support_messages")
+        .select("id, role, content, created_at")
+        .order("created_at", { ascending: true })
+        .limit(200);
+      if (error) throw error;
+      return (data ?? []) as SupportRow[];
+    },
+  });
+
+  const messages = data ?? [];
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages.length, sending]);
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    const body = text.trim();
+    if (!body || sending) return;
+    setText("");
+    setSending(true);
+    try {
+      await ask({ data: { message: body } });
+      await qc.invalidateQueries({ queryKey: ["support-messages"] });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Support is unavailable right now");
+      setText(body);
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <>
+      <header className="flex items-center gap-3 border-b border-border px-3 py-3">
+        <button type="button" onClick={onBack} className="lg:hidden" aria-label="Back">
+          <ArrowLeft className="h-5 w-5" />
+        </button>
+        <AppIcon name="support" className="h-9 w-9" />
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold">LocalSpot Support</span>
+          <span className="block truncate text-xs text-muted-foreground">
+            Hindi / English • replies instantly
+          </span>
+        </span>
+      </header>
+
+      <div className="flex-1 space-y-2 overflow-y-auto bg-muted/30 px-3 py-4">
+        {isPending ? (
+          <p className="text-center text-xs text-muted-foreground">Loading…</p>
+        ) : messages.length === 0 ? (
+          <p className="text-center text-xs text-muted-foreground">
+            Namaste! Booking, listing ya refund — kuch bhi poochho.
+          </p>
+        ) : (
+          messages.map((m) => {
+            const mine = m.role === "user";
+            return (
+              <div key={m.id} className={cn("flex", mine ? "justify-end" : "justify-start")}>
+                <div
+                  className={cn(
+                    "max-w-[78%] whitespace-pre-wrap break-words rounded-2xl px-3.5 py-2 text-sm shadow-sm",
+                    mine
+                      ? "rounded-br-md bg-primary text-primary-foreground"
+                      : "rounded-bl-md bg-card text-foreground",
+                  )}
+                >
+                  {m.content}
+                </div>
+              </div>
+            );
+          })
+        )}
+        {sending ? (
+          <p className="text-xs text-muted-foreground">Support is typing…</p>
+        ) : null}
+        <div ref={bottomRef} />
+      </div>
+
+      <form onSubmit={submit} className="flex items-center gap-2 border-t border-border p-2.5">
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder="Ask LocalSpot Support…"
+          className="h-11 flex-1 rounded-full border border-border bg-background px-4 text-sm outline-none focus:ring-2 focus:ring-ring/40"
+        />
+        <button
+          type="submit"
+          disabled={!text.trim() || sending}
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground disabled:opacity-50"
+          aria-label="Send"
+        >
+          <Send className="h-4 w-4" />
+        </button>
+      </form>
+    </>
+  );
+}
