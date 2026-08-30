@@ -15,7 +15,6 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as MapRouteImport } from './routes/map'
-import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as SearchRouteImport } from './routes/search'
@@ -51,11 +50,6 @@ const ExploreRoute = ExploreRouteImport.update({
 const MapRoute = MapRouteImport.update({
   id: '/map',
   path: '/map',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotificationsRoute = NotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProfileRoute = ProfileRouteImport.update({
@@ -100,7 +94,6 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
-  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
@@ -115,7 +108,6 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
-  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
@@ -132,7 +124,6 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/explore': typeof ExploreRoute
   '/map': typeof MapRoute
-  '/notifications': typeof NotificationsRoute
   '/profile': typeof ProfileRoute
   '/saved': typeof SavedRoute
   '/search': typeof SearchRoute
@@ -149,7 +140,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/explore'
     | '/map'
-    | '/notifications'
     | '/profile'
     | '/saved'
     | '/search'
@@ -164,7 +154,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/explore'
     | '/map'
-    | '/notifications'
     | '/profile'
     | '/saved'
     | '/search'
@@ -180,7 +169,6 @@ export interface FileRouteTypes {
     | '/chat'
     | '/explore'
     | '/map'
-    | '/notifications'
     | '/profile'
     | '/saved'
     | '/search'
@@ -197,7 +185,6 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   ExploreRoute: typeof ExploreRoute
   MapRoute: typeof MapRoute
-  NotificationsRoute: typeof NotificationsRoute
   ProfileRoute: typeof ProfileRoute
   SavedRoute: typeof SavedRoute
   SearchRoute: typeof SearchRoute
@@ -247,13 +234,6 @@ declare module '@tanstack/react-router' {
       path: '/map'
       fullPath: '/map'
       preLoaderRoute: typeof MapRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notifications': {
-      id: '/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -328,7 +308,6 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   ExploreRoute: ExploreRoute,
   MapRoute: MapRoute,
-  NotificationsRoute: NotificationsRoute,
   ProfileRoute: ProfileRoute,
   SavedRoute: SavedRoute,
   SearchRoute: SearchRoute,
