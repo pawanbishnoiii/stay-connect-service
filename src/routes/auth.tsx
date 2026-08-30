@@ -66,8 +66,18 @@ function AuthPage() {
           /* role may already exist — ignore */
         }
       }
+      const isOwner = role === "owner" || wanted === "owner";
+      let ownerReady = false;
+      if (isOwner) {
+        const { data: biz } = await supabase
+          .from("business_profiles")
+          .select("onboarding_complete")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        ownerReady = Boolean(biz?.onboarding_complete);
+      }
       if (!cancelled) {
-        void navigate({ to: role === "owner" || wanted === "owner" ? "/onboarding" : "/" });
+        void navigate({ to: isOwner ? (ownerReady ? "/owner" : "/onboarding") : "/" });
       }
     };
     void apply();
