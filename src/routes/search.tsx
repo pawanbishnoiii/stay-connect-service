@@ -7,7 +7,9 @@ import { useUserLocation } from "@/hooks/useLocation";
 import { ListingCard, ListingCardSkeleton } from "@/components/listing/ListingCard";
 
 export const Route = createFileRoute("/search")({
-  validateSearch: (s: Record<string, unknown>) => ({ q: typeof s.q === "string" ? s.q : "" }),
+validateSearch: (s: Record<string, unknown>) => ({
+    q: typeof s["q"] === "string" ? s["q"] : "",
+  }),
   head: () => ({
     meta: [
       { title: "Search — LocalSpot" },
