@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star, Crosshair } from "lucide-react";
 import { fetchListings } from "@/lib/listings";
 import { useUserLocation } from "@/hooks/useLocation";
 import { ListingMap } from "@/components/map/ListingMap";
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/map")({
 function MapPage() {
   const category = useSearch({ from: "/map" }).category ?? "";
   const navigate = useNavigate();
-  const { point, label } = useUserLocation();
+  const { point, label, detect, detecting, live, setLive } = useUserLocation();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const { data, isPending } = useQuery({
