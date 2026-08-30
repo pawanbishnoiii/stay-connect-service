@@ -1,18 +1,23 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
-import { BadgeCheck, CalendarDays, Loader2, MapPin, MessageCircle, Phone, Star } from "lucide-react";
+import { BadgeCheck, ExternalLink, Loader2, MapPin, MessageCircle, Phone, Star } from "lucide-react";
 import { fetchListingBySlug } from "@/lib/listings";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { inr } from "@/lib/format";
 import { AppIcon } from "@/components/AppIcon";
-import { CATEGORY_ICON } from "@/lib/icons";
+import { CATEGORY_ICON, amenityIcon } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { startConversation } from "@/lib/chat";
 import { toast } from "sonner";
+import { ListingMap } from "@/components/map/ListingMap";
+import { ReviewsSection } from "@/components/listing/ReviewsSection";
+import { ScheduleVisit } from "@/components/listing/ScheduleVisit";
+import { SimilarListings } from "@/components/listing/SimilarListings";
+import type { ListingWithDistance } from "@/lib/listings";
 
 export const Route = createFileRoute("/listing/$slug")({
   loader: async ({ params }) => {
