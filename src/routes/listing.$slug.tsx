@@ -236,6 +236,104 @@ function ListingDetail() {
                 </div>
               </section>
             ) : null}
+
+            {offers.length > 0 ? (
+              <section>
+                <h2 className="text-lg font-semibold">Offers</h2>
+                <div className="mt-3 space-y-2">
+                  {offers.map((o) => (
+                    <div
+                      key={o.id}
+                      className="flex items-start gap-3 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-4"
+                    >
+                      <AppIcon name="offers" className="h-8 w-8 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">{o.title}</p>
+                        {o.description ? (
+                          <p className="text-xs text-muted-foreground">{o.description}</p>
+                        ) : null}
+                        {o.promo_code ? (
+                          <p className="mt-1 text-xs font-bold tracking-wide text-primary">
+                            Code: {o.promo_code}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {roomTypes.length > 0 ? (
+              <section>
+                <h2 className="text-lg font-semibold">Room type &amp; facilities</h2>
+                <div className="mt-3 space-y-3">
+                  {roomTypes.map((rt, i) => (
+                    <div key={`${rt.name}-${i}`} className="rounded-2xl border border-border bg-card p-4">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="font-semibold">{rt.name}</p>
+                        {rt.price != null ? <p className="font-bold">{inr(rt.price)}</p> : null}
+                      </div>
+                      {rt.facilities?.length ? (
+                        <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                          {rt.facilities.map((f) => (
+                            <li key={f} className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <AppIcon name={amenityIcon(f)} className="h-5 w-5 shrink-0" />
+                              <span className="truncate">{f}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {rules.length > 0 ? (
+              <section>
+                <h2 className="text-lg font-semibold">Rules</h2>
+                <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {rules.map((r) => (
+                    <li
+                      key={r}
+                      className="rounded-xl border border-border bg-card px-3 py-2 text-sm text-muted-foreground"
+                    >
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            {hasGeo ? (
+              <section>
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-semibold">Location</h2>
+                  <a href={mapsUrl} target="_blank" rel="noreferrer">
+                    <Button type="button" variant="outline" size="sm">
+                      <ExternalLink className="h-4 w-4" /> View on Google Map
+                    </Button>
+                  </a>
+                </div>
+                <div className="mt-3 h-64 overflow-hidden rounded-2xl border border-border">
+                  <ListingMap
+                    center={{ lat: Number(listing.lat), lng: Number(listing.lng) }}
+                    listings={[listing as unknown as ListingWithDistance]}
+                    zoom={15}
+                  />
+                </div>
+              </section>
+            ) : null}
+
+            <ReviewsSection listingId={listing.id} />
+
+            <SimilarListings
+              listingId={listing.id}
+              categoryId={listing.category_id}
+              city={listing.city}
+              categorySlug={listing.categories?.slug ?? null}
+            />
           </div>
         </div>
 
