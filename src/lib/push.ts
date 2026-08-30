@@ -69,14 +69,9 @@ export type PushResult =
   | { status: "registered"; token: string }
   | { status: "not-configured" | "unsupported" | "open-in-new-tab" | "denied" };
 
+/** Sync check against env defaults (or the last resolved admin config). */
 export function pushConfigured(): boolean {
-  return Boolean(
-    firebaseConfig.apiKey &&
-      firebaseConfig.projectId &&
-      firebaseConfig.appId &&
-      firebaseConfig.messagingSenderId &&
-      vapidKey,
-  );
+  return isConfigComplete(cached ?? firebaseConfig);
 }
 
 /** Must be called from a user gesture. Registers the browser for FCM push. */
