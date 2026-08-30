@@ -33,7 +33,7 @@ export async function searchPlaces(query: string, signal?: AbortSignal): Promise
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("limit", "6");
   url.searchParams.set("countrycodes", "in");
-  const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+  const res = await fetch(url, { signal: signal ?? null, headers: { Accept: "application/json" } });
   if (!res.ok) return [];
   const rows = (await res.json()) as Array<{
     place_id: number;
@@ -54,7 +54,7 @@ export async function reverseGeocode(point: LatLng, signal?: AbortSignal): Promi
   url.searchParams.set("lat", String(point.lat));
   url.searchParams.set("lon", String(point.lng));
   url.searchParams.set("format", "jsonv2");
-  const res = await fetch(url, { signal, headers: { Accept: "application/json" } });
+  const res = await fetch(url, { signal: signal ?? null, headers: { Accept: "application/json" } });
   if (!res.ok) return null;
   const data = (await res.json()) as { address?: Record<string, string>; display_name?: string };
   const a = data.address ?? {};
