@@ -530,6 +530,37 @@ function OnboardingPage() {
               );
             })}
           </div>
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold">Business location</p>
+                <p className="text-xs text-muted-foreground">
+                  Fetch live location — city, PIN, state, district and colony fill automatically.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void detectLocation()}
+                disabled={detecting}
+              >
+                {detecting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Use my location"}
+              </Button>
+            </div>
+
+            {form.lat && form.lng ? (
+              <div className="mt-3 overflow-hidden rounded-xl border border-border">
+                <iframe
+                  title="Business location pin"
+                  className="h-48 w-full"
+                  loading="lazy"
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${Number(form.lng) - 0.006}%2C${Number(form.lat) - 0.004}%2C${Number(form.lng) + 0.006}%2C${Number(form.lat) + 0.004}&layer=mapnik&marker=${form.lat}%2C${form.lng}`}
+                />
+              </div>
+            ) : null}
+          </div>
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="ob-city">City *</Label>
@@ -541,12 +572,30 @@ function OnboardingPage() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="ob-loc">Locality</Label>
+              <Label htmlFor="ob-loc">Locality / Colony</Label>
               <Input
                 id="ob-loc"
                 value={form.locality}
                 onChange={(e) => set("locality", e.target.value)}
                 placeholder="Mansarovar"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ob-village">Village</Label>
+              <Input
+                id="ob-village"
+                value={form.village}
+                onChange={(e) => set("village", e.target.value)}
+                placeholder="Optional"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ob-district">District</Label>
+              <Input
+                id="ob-district"
+                value={form.district}
+                onChange={(e) => set("district", e.target.value)}
+                placeholder="Jaipur"
               />
             </div>
             <div className="space-y-1.5">
@@ -568,7 +617,39 @@ function OnboardingPage() {
               />
             </div>
           </div>
+
+          <div className="space-y-2 rounded-2xl border border-border bg-muted/30 p-4 text-sm">
+            <label className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={form.location_confirmed}
+                onChange={(e) => set("location_confirmed", e.target.checked)}
+              />
+              <span>I have checked and confirm this location is correct.</span>
+            </label>
+            <label className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={form.accepted_terms}
+                onChange={(e) => set("accepted_terms", e.target.checked)}
+              />
+              <span>I accept the terms of service and privacy policy.</span>
+            </label>
+            <label className="flex items-start gap-2">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={form.accepted_refund_policy}
+                onChange={(e) => set("accepted_refund_policy", e.target.checked)}
+              />
+              <span>I accept the refund &amp; cancellation policy.</span>
+            </label>
+          </div>
+
           <StepFooter busy={busy} onBack={() => setStep(0)} />
+
         </form>
       ) : null}
 
