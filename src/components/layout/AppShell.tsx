@@ -1,19 +1,23 @@
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Search, MapPin, ChevronDown } from "lucide-react";
+import { Bell, Search, MapPin, ChevronDown, Shield } from "lucide-react";
 import { DesktopSidebar } from "./DesktopSidebar";
 import { BottomNav } from "./BottomNav";
+import { Footer } from "./Footer";
 import { useUserLocation } from "@/hooks/useLocation";
 import { useAuth } from "@/hooks/useAuth";
+import { usePresence } from "@/hooks/usePresence";
 import { initials } from "@/lib/format";
 import { LocationPicker } from "@/components/LocationPicker";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { label } = useUserLocation();
-  const { user, profile } = useAuth();
+  const { user, profile, role } = useAuth();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
+  usePresence();
+
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -49,6 +53,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             </form>
 
             <div className="ml-auto flex items-center gap-2">
+              {role === "admin" ? (
+                <Link
+                  to="/admin"
+                  aria-label="Admin console"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card"
+                >
+                  <Shield className="h-[18px] w-[18px] text-primary" />
+                </Link>
+              ) : null}
               <Link
                 to="/owner"
                 className="hidden rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary lg:block"
@@ -56,6 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 List Your Property
               </Link>
               <Link
+
                 to="/chat"
                 search={{ c: "support" }}
                 aria-label="Messages and support"
@@ -94,6 +108,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
 
         <main className="min-w-0 flex-1 pb-24 md:pb-8">{children}</main>
+        <Footer />
+
       </div>
 
       <BottomNav />
