@@ -151,7 +151,9 @@ function ChatPage() {
 
         {/* Thread */}
         <div className={cn("flex min-h-0 flex-col", !c && "hidden lg:flex")}>
-          {active ? (
+          {c === SUPPORT_ID ? (
+            <SupportThread onBack={() => void navigate({ to: "/chat", search: {} })} />
+          ) : active ? (
             <Thread
               conversationId={active.id}
               userId={user.id}
