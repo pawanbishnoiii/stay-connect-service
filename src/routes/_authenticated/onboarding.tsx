@@ -215,6 +215,39 @@ function OnboardingPage() {
     }
   }
 
+  async function detectLocation() {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      toast.error("Your browser does not support location. Fill the address manually.");
+      return;
+    }
+    setDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const point = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        const detail = await reverseGeocodeDetail(point).catch(() => null);
+        setForm((f) => ({
+          ...f,
+          lat: String(point.lat),
+          lng: String(point.lng),
+          city: detail?.city || f.city,
+          locality: detail?.locality || f.locality,
+          state: detail?.state || f.state,
+          pincode: detail?.pincode || f.pincode,
+          district: detail?.district || f.district,
+          village: detail?.village || f.village,
+          address: detail?.address || f.address,
+        }));
+        setDetecting(false);
+        toast.success("Location detected — please check and correct the fields.");
+      },
+      () => {
+        setDetecting(false);
+        toast.error("Location permission blocked. Search your area or fill it manually.");
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 },
+    );
+  }
+
   async function saveStep2(e: FormEvent) {
     e.preventDefault();
     if (!user) return;
@@ -222,24 +255,48 @@ function OnboardingPage() {
       toast.error("Please choose a category");
       return;
     }
+    if (!form.city.trim()) {
+      toast.error("City is required");
+      return;
+    }
+    if (!form.location_confirmed) {
+      toast.error("Please confirm your location is correct");
+      return;
+    }
+    if (!form.accepted_terms || !form.accepted_refund_policy) {
+      toast.error("Please accept the terms and refund policy");
+      return;
+    }
     setBusy(true);
     try {
       await upsertBusiness({
         user_id: user.id,
         primary_category_id: form.primary_category_id,
-        city: form.city || null,
-        locality: form.locality || null,
-        state: form.state || null,
-        pincode: form.pincode || null,
+        city: form.city.trim() || null,
+        locality: form.locality.trim() || null,
+        state: form.state.trim() || null,
+        pincode: form.pincode.trim() || null,
+        district: form.district.trim() || null,
+        village: form.village.trim() || null,
+        lat: form.lat ? Number(form.lat) : null,
+        lng: form.lng ? Number(form.lng) : null,
+        location_confirmed: true,
+        accepted_terms: true,
+        accepted_refund_policy: true,
         onboarding_step: 3,
       });
       setStep(2);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not save category & location");
+      toast.error(
+        err instanceof Error
+          ? `Could not save category & location: ${err.message}`
+          : "Could not save category & location",
+      );
     } finally {
       setBusy(false);
     }
   }
+
 
   async function saveStep3(e: FormEvent) {
     e.preventDefault();
