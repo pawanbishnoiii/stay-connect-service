@@ -77,11 +77,26 @@ function ListingDetail() {
   const listing = Route.useLoaderData();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [quantity, setQuantity] = useState(1);
   const [phone, setPhone] = useState("");
   const [booking, setBooking] = useState(false);
   const [chatting, setChatting] = useState(false);
+
+  const { data: owner } = useQuery({
+    queryKey: ["listing-owner", listing.owner_id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, phone")
+        .eq("id", listing.owner_id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const callNumber = (listing.phone || owner?.phone || "").replace(/\D/g, "") || null;
+  const waNumber = (listing.whatsapp || listing.phone || owner?.phone || "").replace(/\D/g, "").slice(-10) || null;
 
   const media = [
     ...(listing.cover_url ? [{ url: listing.cover_url }] : []),
