@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate, useSearch } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Star } from "lucide-react";
+import { Star, Crosshair } from "lucide-react";
 import { fetchListings } from "@/lib/listings";
 import { useUserLocation } from "@/hooks/useLocation";
 import { ListingMap } from "@/components/map/ListingMap";
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/map")({
 function MapPage() {
   const category = useSearch({ from: "/map" }).category ?? "";
   const navigate = useNavigate();
-  const { point, label } = useUserLocation();
+  const { point, label, detect, detecting, live, setLive } = useUserLocation();
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const { data, isPending } = useQuery({
@@ -51,10 +51,33 @@ function MapPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-4">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-bold tracking-tight">Map</h1>
-        <p className="text-xs text-muted-foreground">Around {label}</p>
+        <div className="flex items-center gap-2">
+          <p className="hidden text-xs text-muted-foreground sm:block">Around {label}</p>
+          <button
+            type="button"
+            onClick={() => void detect()}
+            disabled={detecting}
+            className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-60"
+          >
+            <Crosshair className={cn("h-3.5 w-3.5", detecting && "animate-spin")} />
+            Near me
+          </button>
+          <button
+            type="button"
+            onClick={() => setLive(!live)}
+            className={cn(
+              "rounded-full border px-3 py-1.5 text-xs font-semibold",
+              live ? "border-primary bg-primary/10 text-primary" : "border-border bg-card",
+            )}
+            title="Keep results updating as you move"
+          >
+            {live ? "Live on" : "Live off"}
+          </button>
+        </div>
       </div>
+
 
       <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-2">
         <button

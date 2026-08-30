@@ -15,6 +15,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { LocationProvider } from "@/hooks/useLocation";
 import { AppShell } from "@/components/layout/AppShell";
 import { Toaster } from "@/components/ui/sonner";
+import { ProfileSetupDialog } from "@/components/ProfileSetupDialog";
 
 function NotFoundComponent() {
   return (
@@ -130,6 +131,7 @@ function RootComponent() {
           <AppShell>
             <Outlet />
           </AppShell>
+          <ProfileSetupDialog />
           <Toaster position="top-center" richColors />
         </LocationProvider>
       </AuthProvider>
