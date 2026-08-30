@@ -63,44 +63,44 @@
 
 :root {
   --radius: 1rem;
-  --background: oklch(0.99 0.004 300);
-  --foreground: oklch(0.21 0.03 285);
+  --background: oklch(0.99 0.006 70);
+  --foreground: oklch(0.22 0.02 55);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.03 285);
+  --card-foreground: oklch(0.22 0.02 55);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.03 285);
-  --primary: oklch(0.55 0.24 295);
-  --primary-foreground: oklch(0.99 0.005 300);
-  --secondary: oklch(0.96 0.015 300);
-  --secondary-foreground: oklch(0.32 0.09 295);
-  --muted: oklch(0.965 0.008 300);
-  --muted-foreground: oklch(0.52 0.03 288);
-  --accent: oklch(0.94 0.04 330);
-  --accent-foreground: oklch(0.35 0.16 340);
+  --popover-foreground: oklch(0.22 0.02 55);
+  --primary: oklch(0.67 0.2 47);
+  --primary-foreground: oklch(0.99 0.005 70);
+  --secondary: oklch(0.96 0.02 70);
+  --secondary-foreground: oklch(0.36 0.09 50);
+  --muted: oklch(0.966 0.01 70);
+  --muted-foreground: oklch(0.52 0.03 60);
+  --accent: oklch(0.95 0.05 75);
+  --accent-foreground: oklch(0.4 0.14 50);
   --destructive: oklch(0.6 0.23 25);
-  --destructive-foreground: oklch(0.99 0.005 300);
-  --border: oklch(0.92 0.012 300);
-  --input: oklch(0.92 0.012 300);
-  --ring: oklch(0.55 0.24 295);
-  --brand: oklch(0.55 0.24 295);
-  --brand-2: oklch(0.66 0.23 350);
+  --destructive-foreground: oklch(0.99 0.005 70);
+  --border: oklch(0.92 0.014 70);
+  --input: oklch(0.92 0.014 70);
+  --ring: oklch(0.67 0.2 47);
+  --brand: oklch(0.67 0.21 45);
+  --brand-2: oklch(0.78 0.17 75);
   --success: oklch(0.62 0.16 152);
-  --success-foreground: oklch(0.99 0.005 300);
+  --success-foreground: oklch(0.99 0.005 70);
   --warning: oklch(0.75 0.16 70);
   --warning-foreground: oklch(0.25 0.05 70);
-  --chart-1: oklch(0.55 0.24 295);
-  --chart-2: oklch(0.66 0.23 350);
+  --chart-1: oklch(0.67 0.21 45);
+  --chart-2: oklch(0.78 0.17 75);
   --chart-3: oklch(0.62 0.16 152);
-  --chart-4: oklch(0.75 0.16 70);
-  --chart-5: oklch(0.6 0.15 240);
-  --sidebar: oklch(0.995 0.004 300);
-  --sidebar-foreground: oklch(0.21 0.03 285);
-  --sidebar-primary: oklch(0.55 0.24 295);
-  --sidebar-primary-foreground: oklch(0.99 0.005 300);
-  --sidebar-accent: oklch(0.96 0.02 300);
-  --sidebar-accent-foreground: oklch(0.35 0.12 295);
-  --sidebar-border: oklch(0.93 0.012 300);
-  --sidebar-ring: oklch(0.55 0.24 295);
+  --chart-4: oklch(0.6 0.15 240);
+  --chart-5: oklch(0.66 0.23 350);
+  --sidebar: oklch(0.995 0.005 70);
+  --sidebar-foreground: oklch(0.22 0.02 55);
+  --sidebar-primary: oklch(0.67 0.2 47);
+  --sidebar-primary-foreground: oklch(0.99 0.005 70);
+  --sidebar-accent: oklch(0.96 0.025 70);
+  --sidebar-accent-foreground: oklch(0.38 0.12 50);
+  --sidebar-border: oklch(0.93 0.014 70);
+  --sidebar-ring: oklch(0.67 0.2 47);
 }
 
 
@@ -111,7 +111,7 @@
   --card-foreground: oklch(0.984 0.003 247.858);
   --popover: oklch(0.208 0.042 265.755);
   --popover-foreground: oklch(0.984 0.003 247.858);
-  --primary: oklch(0.68 0.2 300);
+  --primary: oklch(0.72 0.18 55);
   --primary-foreground: oklch(0.208 0.042 265.755);
   --secondary: oklch(0.279 0.041 260.031);
   --secondary-foreground: oklch(0.984 0.003 247.858);
@@ -137,6 +137,12 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --brand: oklch(0.72 0.19 50);
+  --brand-2: oklch(0.8 0.16 80);
+  --success: oklch(0.68 0.15 152);
+  --success-foreground: oklch(0.15 0.02 152);
+  --warning: oklch(0.8 0.15 75);
+  --warning-foreground: oklch(0.2 0.04 75);
 }
 
 @layer base {
@@ -183,3 +189,42 @@
 
 .leaflet-container { height: 100%; width: 100%; z-index: 0; font: inherit; }
 .leaflet-control-attribution { font-size: 10px; }
+
+@utility grid-bg {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--border) 70%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--border) 70%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+@utility dot-bg {
+  background-image: radial-gradient(color-mix(in oklab, var(--brand) 22%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Ambient app background: soft grid + warm glows */
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--background);
+}
+.app-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--border) 65%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--border) 65%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 100% 70% at 50% 0%, #000 55%, transparent 100%);
+}
+.app-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(560px circle at 12% -5%, color-mix(in oklab, var(--brand) 20%, transparent), transparent 60%),
+    radial-gradient(520px circle at 92% 6%, color-mix(in oklab, var(--brand-2) 22%, transparent), transparent 62%);
+}
