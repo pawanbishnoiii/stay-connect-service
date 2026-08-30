@@ -17,6 +17,13 @@ const pin = (active: boolean) =>
     iconAnchor: [15, 15],
   });
 
+const youPin = L.divIcon({
+  className: "",
+  html: `<span style="display:block;width:18px;height:18px;border-radius:9999px;border:3px solid white;box-shadow:0 0 0 6px rgba(59,130,246,.25),0 4px 10px rgba(0,0,0,.25);background:#2563eb"></span>`,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
+
 function Recenter({ center }: { center: LatLng }) {
   const map = useMap();
   useEffect(() => {
@@ -45,6 +52,9 @@ export default function LeafletMap({
         url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <Recenter center={center} />
+      <Marker position={[center.lat, center.lng]} icon={youPin} zIndexOffset={1000}>
+        <Popup>You are here</Popup>
+      </Marker>
       {listings
         .filter((l) => l.lat != null && l.lng != null)
         .map((l) => (
