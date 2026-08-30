@@ -1334,6 +1334,62 @@ export type Database = {
           },
         ]
       }
+      listing_visits: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          mode: string
+          name: string | null
+          notes: string | null
+          owner_id: string
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          visit_date: string
+          visit_time: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          mode?: string
+          name?: string | null
+          notes?: string | null
+          owner_id: string
+          phone: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          visit_date: string
+          visit_time?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          mode?: string
+          name?: string | null
+          notes?: string | null
+          owner_id?: string
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          visit_date?: string
+          visit_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listing_visits_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       listings: {
         Row: {
           about: string | null
@@ -1366,6 +1422,8 @@ export type Database = {
           price_original: number | null
           price_unit: string
           published_at: string | null
+          room_types: Json
+          rules: string[]
           security_deposit: number
           seo_description: string | null
           seo_title: string | null
@@ -1412,6 +1470,8 @@ export type Database = {
           price_original?: number | null
           price_unit?: string
           published_at?: string | null
+          room_types?: Json
+          rules?: string[]
           security_deposit?: number
           seo_description?: string | null
           seo_title?: string | null
@@ -1458,6 +1518,8 @@ export type Database = {
           price_original?: number | null
           price_unit?: string
           published_at?: string | null
+          room_types?: Json
+          rules?: string[]
           security_deposit?: number
           seo_description?: string | null
           seo_title?: string | null
@@ -2480,6 +2542,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      support_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       tags: {
         Row: {
