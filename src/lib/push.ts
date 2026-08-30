@@ -138,12 +138,12 @@ export function pushStatusMessage(status: PushResult["status"]): string {
 
 /** Listen for messages while the app is in the foreground. */
 export async function onForegroundPush(cb: (payload: unknown) => void): Promise<() => void> {
-  if (!pushConfigured()) return () => {};
+  const cfg = await resolveFirebaseConfig();
+  if (!isConfigComplete(cfg)) return () => {};
   const { isSupported, getMessaging, onMessage } = await import("firebase/messaging");
   if (!(await isSupported())) return () => {};
+  const { vapidKey: _v, ...appCfg } = cfg;
   const { initializeApp, getApps, getApp } = await import("firebase/app");
-  const app = getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig as Record<string, string>);
+  const app = getApps().length ? getApp() : initializeApp(appCfg as Record<string, string>);
   return onMessage(getMessaging(app), cb);
 }
