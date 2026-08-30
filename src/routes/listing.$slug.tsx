@@ -63,6 +63,16 @@ export const Route = createFileRoute("/listing/$slug")({
   component: ListingDetail,
 });
 
+type OfferItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  promo_code: string | null;
+  is_active: boolean | null;
+};
+
+type RoomType = { name: string; price?: number | null; facilities?: string[] };
+
 function ListingDetail() {
   const listing = Route.useLoaderData();
   const { user } = useAuth();
