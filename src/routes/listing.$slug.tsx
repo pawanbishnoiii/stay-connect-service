@@ -1,18 +1,23 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
-import { BadgeCheck, CalendarDays, Loader2, MapPin, MessageCircle, Phone, Star } from "lucide-react";
+import { BadgeCheck, ExternalLink, Loader2, MapPin, MessageCircle, Phone, Star } from "lucide-react";
 import { fetchListingBySlug } from "@/lib/listings";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { inr } from "@/lib/format";
 import { AppIcon } from "@/components/AppIcon";
-import { CATEGORY_ICON } from "@/lib/icons";
+import { CATEGORY_ICON, amenityIcon } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { startConversation } from "@/lib/chat";
 import { toast } from "sonner";
+import { ListingMap } from "@/components/map/ListingMap";
+import { ReviewsSection } from "@/components/listing/ReviewsSection";
+import { ScheduleVisit } from "@/components/listing/ScheduleVisit";
+import { SimilarListings } from "@/components/listing/SimilarListings";
+import type { ListingWithDistance } from "@/lib/listings";
 
 export const Route = createFileRoute("/listing/$slug")({
   loader: async ({ params }) => {
@@ -58,15 +63,40 @@ export const Route = createFileRoute("/listing/$slug")({
   component: ListingDetail,
 });
 
+type OfferItem = {
+  id: string;
+  title: string;
+  description: string | null;
+  promo_code: string | null;
+  is_active: boolean | null;
+};
+
+type RoomType = { name: string; price?: number | null; facilities?: string[] };
+
 function ListingDetail() {
   const listing = Route.useLoaderData();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [quantity, setQuantity] = useState(1);
   const [phone, setPhone] = useState("");
   const [booking, setBooking] = useState(false);
   const [chatting, setChatting] = useState(false);
+
+  const { data: owner } = useQuery({
+    queryKey: ["listing-owner", listing.owner_id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, full_name, avatar_url, phone")
+        .eq("id", listing.owner_id)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const callNumber = (listing.phone || owner?.phone || "").replace(/\D/g, "") || null;
+  const waNumber = (listing.whatsapp || listing.phone || owner?.phone || "").replace(/\D/g, "").slice(-10) || null;
 
   const media = [
     ...(listing.cover_url ? [{ url: listing.cover_url }] : []),
@@ -151,6 +181,17 @@ function ListingDetail() {
   const catIcon = CATEGORY_ICON[listing.categories?.slug ?? ""] ?? "library";
   const plans = listing.listing_plans ?? [];
   const services = listing.listing_services ?? [];
+  const offers = ((listing.offers ?? []) as OfferItem[]).filter((o) => o.is_active !== false);
+  const rules = (listing.rules ?? []) as string[];
+  const roomTypes = Array.isArray(listing.room_types)
+    ? (listing.room_types as unknown as RoomType[])
+    : [];
+  const hasGeo = listing.lat != null && listing.lng != null;
+  const mapsUrl = hasGeo
+    ? `https://www.google.com/maps/search/?api=1&query=${listing.lat},${listing.lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        [listing.title, listing.address, listing.city].filter(Boolean).join(" "),
+      )}`;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
@@ -231,6 +272,104 @@ function ListingDetail() {
                 </div>
               </section>
             ) : null}
+
+            {offers.length > 0 ? (
+              <section>
+                <h2 className="text-lg font-semibold">Offers</h2>
+                <div className="mt-3 space-y-2">
+                  {offers.map((o) => (
+                    <div
+                      key={o.id}
+                      className="flex items-start gap-3 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-4"
+                    >
+                      <AppIcon name="offers" className="h-8 w-8 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">{o.title}</p>
+                        {o.description ? (
+                          <p className="text-xs text-muted-foreground">{o.description}</p>
+                        ) : null}
+                        {o.promo_code ? (
+                          <p className="mt-1 text-xs font-bold tracking-wide text-primary">
+                            Code: {o.promo_code}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {roomTypes.length > 0 ? (
+              <section>
+                <h2 className="text-lg font-semibold">Room type &amp; facilities</h2>
+                <div className="mt-3 space-y-3">
+                  {roomTypes.map((rt, i) => (
+                    <div key={`${rt.name}-${i}`} className="rounded-2xl border border-border bg-card p-4">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="font-semibold">{rt.name}</p>
+                        {rt.price != null ? <p className="font-bold">{inr(rt.price)}</p> : null}
+                      </div>
+                      {rt.facilities?.length ? (
+                        <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                          {rt.facilities.map((f) => (
+                            <li key={f} className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <AppIcon name={amenityIcon(f)} className="h-5 w-5 shrink-0" />
+                              <span className="truncate">{f}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {rules.length > 0 ? (
+              <section>
+                <h2 className="text-lg font-semibold">Rules</h2>
+                <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {rules.map((r) => (
+                    <li
+                      key={r}
+                      className="rounded-xl border border-border bg-card px-3 py-2 text-sm text-muted-foreground"
+                    >
+                      {r}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            {hasGeo ? (
+              <section>
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-lg font-semibold">Location</h2>
+                  <a href={mapsUrl} target="_blank" rel="noreferrer">
+                    <Button type="button" variant="outline" size="sm">
+                      <ExternalLink className="h-4 w-4" /> View on Google Map
+                    </Button>
+                  </a>
+                </div>
+                <div className="mt-3 h-64 overflow-hidden rounded-2xl border border-border">
+                  <ListingMap
+                    center={{ lat: Number(listing.lat), lng: Number(listing.lng) }}
+                    listings={[listing as unknown as ListingWithDistance]}
+                    zoom={15}
+                  />
+                </div>
+              </section>
+            ) : null}
+
+            <ReviewsSection listingId={listing.id} />
+
+            <SimilarListings
+              listingId={listing.id}
+              categoryId={listing.category_id}
+              city={listing.city}
+              categorySlug={listing.categories?.slug ?? null}
+            />
           </div>
         </div>
 
@@ -325,21 +464,44 @@ function ListingDetail() {
                   Chat
                 </Button>
               ) : null}
-              {listing.whatsapp ? (
-                <a href={`https://wa.me/${listing.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="flex-1">
+              {waNumber ? (
+                <a href={`https://wa.me/91${waNumber}`} target="_blank" rel="noreferrer" className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     WhatsApp
                   </Button>
                 </a>
               ) : null}
-              {listing.phone ? (
-                <a href={`tel:${listing.phone}`} className="flex-1">
+              {callNumber ? (
+                <a href={`tel:${callNumber}`} className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     <Phone className="h-4 w-4" />
                     Call
                   </Button>
                 </a>
               ) : null}
+            </div>
+
+            <div className="mt-3 space-y-2">
+              <ScheduleVisit listingId={listing.id} ownerId={listing.owner_id} title={listing.title} />
+              <a href={mapsUrl} target="_blank" rel="noreferrer" className="block">
+                <Button type="button" variant="ghost" className="w-full">
+                  <ExternalLink className="h-4 w-4" /> View on Google Map
+                </Button>
+              </a>
+            </div>
+
+            <div className="mt-4 flex items-center gap-2 border-t border-border pt-3">
+              {owner?.avatar_url ? (
+                <img src={owner.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover" />
+              ) : (
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                  {(owner?.full_name || "O").slice(0, 1).toUpperCase()}
+                </span>
+              )}
+              <span className="text-sm">
+                <span className="block text-xs text-muted-foreground">Listed by</span>
+                <span className="font-semibold">{owner?.full_name || "LocalSpot owner"}</span>
+              </span>
             </div>
           </div>
 
