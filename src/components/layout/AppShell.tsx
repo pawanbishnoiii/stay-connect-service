@@ -108,6 +108,8 @@ export function AppShell({ children }: { children: ReactNode }) {
         </header>
 
         <main className="min-w-0 flex-1 pb-24 md:pb-8">{children}</main>
+        <Footer />
+
       </div>
 
       <BottomNav />
