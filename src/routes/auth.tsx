@@ -125,11 +125,11 @@ function AuthPage() {
             laundry and more. Book in seconds, chat with owners, pay online.
           </p>
           <div className="mt-8 grid grid-cols-3 gap-3 text-center">
-            {[
+            {([
               ["places", "map"],
               ["orders", "bookings"],
               ["chat", "chat"],
-] as const).map(([label, icon]) => (
+            ] as const).map(([label, icon]) => (
               <div key={label} className="rounded-2xl bg-white/10 p-3 backdrop-blur">
                 <AppIcon name={icon} className="mx-auto h-8 w-8" />
                 <p className="mt-1.5 text-xs font-medium capitalize">{label}</p>
