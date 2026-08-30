@@ -19,7 +19,7 @@ export type ListingRow = {
   total_reviews: number | null;
   category_id: string | null;
   owner_id: string;
-  is_verified: boolean | null;
+  verification: string | null;
   is_featured: boolean | null;
   phone: string | null;
   whatsapp: string | null;
@@ -62,7 +62,7 @@ export async function fetchListings(
   if (filters.query) q = q.or(`title.ilike.%${filters.query}%,locality.ilike.%${filters.query}%,city.ilike.%${filters.query}%`);
   if (filters.maxPrice) q = q.lte("price_current", filters.maxPrice);
   if (filters.minRating) q = q.gte("average_rating", filters.minRating);
-  if (filters.verifiedOnly) q = q.eq("is_verified", true);
+  if (filters.verifiedOnly) q = q.eq("verification", "verified");
 
   if (filters.sort === "rating") q = q.order("average_rating", { ascending: false });
   else if (filters.sort === "price_low") q = q.order("price_current", { ascending: true });
