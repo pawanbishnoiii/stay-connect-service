@@ -1393,6 +1393,7 @@ export type Database = {
       listings: {
         Row: {
           about: string | null
+          accommodation_type: string | null
           address: string | null
           advance_amount: number
           available_units: number | null
@@ -1405,6 +1406,7 @@ export type Database = {
           description: string | null
           electricity_charge: number
           email: string | null
+          food_menu: Json
           gender_preference: string
           id: string
           is_featured: boolean
@@ -1418,6 +1420,7 @@ export type Database = {
           phone: string | null
           pincode: string | null
           price_current: number | null
+          price_items: Json
           price_offer: number | null
           price_original: number | null
           price_unit: string
@@ -1427,6 +1430,10 @@ export type Database = {
           security_deposit: number
           seo_description: string | null
           seo_title: string | null
+          show_book: boolean
+          show_order: boolean
+          show_visit: boolean
+          show_whatsapp: boolean
           slug: string
           state: string | null
           status: Database["public"]["Enums"]["listing_state"]
@@ -1441,6 +1448,7 @@ export type Database = {
         }
         Insert: {
           about?: string | null
+          accommodation_type?: string | null
           address?: string | null
           advance_amount?: number
           available_units?: number | null
@@ -1453,6 +1461,7 @@ export type Database = {
           description?: string | null
           electricity_charge?: number
           email?: string | null
+          food_menu?: Json
           gender_preference?: string
           id?: string
           is_featured?: boolean
@@ -1466,6 +1475,7 @@ export type Database = {
           phone?: string | null
           pincode?: string | null
           price_current?: number | null
+          price_items?: Json
           price_offer?: number | null
           price_original?: number | null
           price_unit?: string
@@ -1475,6 +1485,10 @@ export type Database = {
           security_deposit?: number
           seo_description?: string | null
           seo_title?: string | null
+          show_book?: boolean
+          show_order?: boolean
+          show_visit?: boolean
+          show_whatsapp?: boolean
           slug: string
           state?: string | null
           status?: Database["public"]["Enums"]["listing_state"]
@@ -1489,6 +1503,7 @@ export type Database = {
         }
         Update: {
           about?: string | null
+          accommodation_type?: string | null
           address?: string | null
           advance_amount?: number
           available_units?: number | null
@@ -1501,6 +1516,7 @@ export type Database = {
           description?: string | null
           electricity_charge?: number
           email?: string | null
+          food_menu?: Json
           gender_preference?: string
           id?: string
           is_featured?: boolean
@@ -1514,6 +1530,7 @@ export type Database = {
           phone?: string | null
           pincode?: string | null
           price_current?: number | null
+          price_items?: Json
           price_offer?: number | null
           price_original?: number | null
           price_unit?: string
@@ -1523,6 +1540,10 @@ export type Database = {
           security_deposit?: number
           seo_description?: string | null
           seo_title?: string | null
+          show_book?: boolean
+          show_order?: boolean
+          show_visit?: boolean
+          show_whatsapp?: boolean
           slug?: string
           state?: string | null
           status?: Database["public"]["Enums"]["listing_state"]
@@ -1825,11 +1846,13 @@ export type Database = {
           full_name: string
           gender: string | null
           id: string
+          last_seen_at: string | null
           lat: number | null
           lng: number | null
           needs_onboarding: boolean
           phone: string | null
           push_opted_in: boolean
+          total_seconds: number
           updated_at: string
         }
         Insert: {
@@ -1840,11 +1863,13 @@ export type Database = {
           full_name?: string
           gender?: string | null
           id: string
+          last_seen_at?: string | null
           lat?: number | null
           lng?: number | null
           needs_onboarding?: boolean
           phone?: string | null
           push_opted_in?: boolean
+          total_seconds?: number
           updated_at?: string
         }
         Update: {
@@ -1855,11 +1880,13 @@ export type Database = {
           full_name?: string
           gender?: string | null
           id?: string
+          last_seen_at?: string | null
           lat?: number | null
           lng?: number | null
           needs_onboarding?: boolean
           phone?: string | null
           push_opted_in?: boolean
+          total_seconds?: number
           updated_at?: string
         }
         Relationships: []
