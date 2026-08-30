@@ -164,6 +164,14 @@ function OnboardingPage() {
             locality: biz.locality ?? "",
             state: biz.state ?? "",
             pincode: biz.pincode ?? "",
+            district: biz.district ?? "",
+            village: biz.village ?? "",
+            lat: biz.lat != null ? String(biz.lat) : "",
+            lng: biz.lng != null ? String(biz.lng) : "",
+            location_confirmed: Boolean(biz.location_confirmed),
+            accepted_terms: Boolean(biz.accepted_terms),
+            accepted_refund_policy: Boolean(biz.accepted_refund_policy),
+
           }));
           if (biz.onboarding_complete) setDone(true);
           else setStep(Math.max(0, Math.min((biz.onboarding_step ?? 1) - 1, 3)));
