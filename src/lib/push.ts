@@ -1,22 +1,69 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const appId = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_APP_ID'] as
+const envAppId = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_APP_ID'] as
   | string
   | undefined;
-const vapidKey = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_VAPID_KEY'] as
+const envVapid = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_VAPID_KEY'] as
   | string
   | undefined;
 
-export const firebaseConfig = {
+export type FirebaseWebConfig = {
+  apiKey?: string;
+  authDomain?: string;
+  projectId?: string;
+  storageBucket?: string;
+  messagingSenderId?: string;
+  appId?: string;
+  measurementId?: string;
+  vapidKey?: string;
+};
+
+/** Env/connector defaults — admins can override these from the Admin panel. */
+export const firebaseConfig: FirebaseWebConfig = {
   apiKey: import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_WEB_API_KEY'] as
     | string
     | undefined,
   projectId: import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_PROJECT_ID'] as
     | string
     | undefined,
-  appId,
-  messagingSenderId: appId?.split(":")[1] ?? "",
+  appId: envAppId,
+  messagingSenderId: envAppId?.split(":")[1] ?? "",
+  vapidKey: envVapid,
 };
+
+export const FIREBASE_SETTING_KEY = "firebase_web_config";
+
+let cached: FirebaseWebConfig | null = null;
+
+function clean(cfg: FirebaseWebConfig): FirebaseWebConfig {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(cfg)) if (typeof v === "string" && v.trim()) out[k] = v.trim();
+  return out as FirebaseWebConfig;
+}
+
+/** Admin-managed config from the database, falling back to connector env values. */
+export async function resolveFirebaseConfig(force = false): Promise<FirebaseWebConfig> {
+  if (cached && !force) return cached;
+  let override: FirebaseWebConfig = {};
+  try {
+    const { data } = await supabase
+      .from("admin_settings")
+      .select("value")
+      .eq("key", FIREBASE_SETTING_KEY)
+      .maybeSingle();
+    if (data?.value && typeof data.value === "object") override = data.value as FirebaseWebConfig;
+  } catch {
+    /* offline or blocked — fall back to env */
+  }
+  const merged = clean({ ...firebaseConfig, ...override });
+  if (!merged.messagingSenderId && merged.appId) merged.messagingSenderId = merged.appId.split(":")[1];
+  cached = merged;
+  return merged;
+}
+
+export function isConfigComplete(cfg: FirebaseWebConfig): boolean {
+  return Boolean(cfg.apiKey && cfg.projectId && cfg.appId && cfg.messagingSenderId && cfg.vapidKey);
+}
 
 export type PushResult =
   | { status: "registered"; token: string }
