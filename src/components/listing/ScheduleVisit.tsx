@@ -35,8 +35,14 @@ export function ScheduleVisit({
       toast.error("Sign in to schedule a visit");
       return;
     }
-    if (!date) return toast.error("Pick a visit date");
-    if (phone.replace(/\D/g, "").length < 10) return toast.error("Enter a valid 10-digit mobile");
+    if (!date) {
+      toast.error("Pick a visit date");
+      return;
+    }
+    if (phone.replace(/\D/g, "").length < 10) {
+      toast.error("Enter a valid 10-digit mobile");
+      return;
+    }
 
     setSaving(true);
     try {
