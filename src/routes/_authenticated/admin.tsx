@@ -438,6 +438,8 @@ function SettingsTab() {
         </Button>
       </div>
 
+      <FirebaseCard onSave={save} />
+
       <div className="space-y-3 rounded-2xl border border-border p-4 lg:col-span-2">
         <div className="flex items-center justify-between">
           <h2 className="font-bold">Email (SMTP)</h2>
