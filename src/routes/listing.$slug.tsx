@@ -156,6 +156,17 @@ function ListingDetail() {
   const catIcon = CATEGORY_ICON[listing.categories?.slug ?? ""] ?? "library";
   const plans = listing.listing_plans ?? [];
   const services = listing.listing_services ?? [];
+  const offers = ((listing.offers ?? []) as OfferItem[]).filter((o) => o.is_active !== false);
+  const rules = (listing.rules ?? []) as string[];
+  const roomTypes = Array.isArray(listing.room_types)
+    ? (listing.room_types as unknown as RoomType[])
+    : [];
+  const hasGeo = listing.lat != null && listing.lng != null;
+  const mapsUrl = hasGeo
+    ? `https://www.google.com/maps/search/?api=1&query=${listing.lat},${listing.lng}`
+    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        [listing.title, listing.address, listing.city].filter(Boolean).join(" "),
+      )}`;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6">
