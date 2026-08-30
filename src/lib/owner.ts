@@ -41,10 +41,33 @@ export async function fetchMyBusiness(userId: string): Promise<BusinessRow | nul
   return data;
 }
 
+/**
+ * Update the caller's business profile when it exists, otherwise insert it.
+ * A plain `upsert` conflicts on the primary key (id), so partial patches keyed
+ * only by user_id tried to insert a duplicate row and failed.
+ */
 export async function upsertBusiness(patch: Partial<BusinessRow> & { user_id: string }) {
-  const { error } = await supabase
+  const { data: existing, error: findError } = await supabase
     .from("business_profiles")
-    .upsert(patch as unknown as Tables["business_profiles"]["Insert"]);
+    .select("id")
+    .eq("user_id", patch.user_id)
+    .maybeSingle();
+  if (findError) throw findError;
+
+  if (existing) {
+    const { user_id: _ignored, ...rest } = patch;
+    const { error } = await supabase
+      .from("business_profiles")
+      .update(rest as unknown as Tables["business_profiles"]["Update"])
+      .eq("id", existing.id);
+    if (error) throw error;
+    return;
+  }
+
+  const { error } = await supabase.from("business_profiles").insert({
+    ...patch,
+    display_name: patch.display_name ?? "My business",
+  } as unknown as Tables["business_profiles"]["Insert"]);
   if (error) throw error;
 }
 
