@@ -100,7 +100,7 @@ function Row({
   icon: Icon,
   label,
 }: {
-  to: "/saved" | "/chat" | "/notifications" | "/owner";
+  to: "/saved" | "/chat" | "/owner";
   icon: typeof Heart;
   label: string;
 }) {
