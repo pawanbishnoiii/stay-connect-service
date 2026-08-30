@@ -76,7 +76,7 @@ export function SimilarListings({
         .order("is_featured", { ascending: false })
         .limit(total * 2);
 
-      const sameRows = ((same.data ?? []) as unknown as Row[]) ?? [];
+      const sameRows = (same.data ?? []) as unknown as Row[];
       const otherRows = ((others.data ?? []) as unknown as Row[])
         .filter((r) => !sameRows.some((s) => s.id === r.id))
         .filter((r) => (categoryId ? r.categories?.slug !== categorySlug : true))
