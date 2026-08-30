@@ -39,6 +39,7 @@ export type ListingFilters = {
   maxPrice?: number | null;
   minRating?: number | null;
   verifiedOnly?: boolean;
+  amenities?: string[];
   radiusKm?: number;
   sort?: "distance" | "rating" | "price_low" | "price_high" | "newest";
 };
@@ -80,6 +81,21 @@ export async function fetchListings(
   }));
 
   if (filters.category) rows = rows.filter((r) => r.category_slug === filters.category);
+
+  if (filters.amenities?.length) {
+    const { data: links } = await supabase
+      .from("listing_amenities")
+      .select("listing_id, amenities:amenity_id ( slug )")
+      .in("listing_id", rows.map((r) => r.id));
+    const bySlug = new Map<string, Set<string>>();
+    for (const link of (links ?? []) as unknown as Array<{ listing_id: string; amenities: { slug: string } | null }>) {
+      if (!link.amenities) continue;
+      const set = bySlug.get(link.listing_id) ?? new Set<string>();
+      set.add(link.amenities.slug);
+      bySlug.set(link.listing_id, set);
+    }
+    rows = rows.filter((r) => filters.amenities!.every((a) => bySlug.get(r.id)?.has(a)));
+  }
   if (origin && filters.radiusKm) {
     rows = rows.filter((r) => r.distance_km == null || r.distance_km <= filters.radiusKm!);
   }
@@ -113,4 +129,14 @@ export async function fetchListingBySlug(slug: string) {
     .maybeSingle();
   if (error) throw error;
   return data;
+}
+
+export async function fetchAmenities() {
+  const { data, error } = await supabase
+    .from("amenities")
+    .select("id, name, slug, group_name")
+    .eq("is_active", true)
+    .order("group_name", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
 }

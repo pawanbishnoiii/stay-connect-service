@@ -11,6 +11,7 @@ import { CATEGORY_ICON } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { startConversation } from "@/lib/chat";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/listing/$slug")({
@@ -128,21 +129,18 @@ function ListingDetail() {
   }
 
   async function startChat() {
-    if (!user) return;
+    if (!user) {
+      toast.error("Sign in to chat with the owner");
+      return;
+    }
     setChatting(true);
     try {
-      const { data, error } = await supabase
-        .from("conversations")
-        .insert({
-          student_id: user.id,
-          owner_id: listing.owner_id,
-          listing_id: listing.id,
-        })
-        .select("id")
-        .single();
-      if (error) throw error;
-      toast.success("Conversation started");
-      void navigate({ to: "/chat" });
+      const id = await startConversation({
+        studentId: user.id,
+        ownerId: listing.owner_id,
+        listingId: listing.id,
+      });
+      void navigate({ to: "/chat", search: { c: id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not start chat");
     } finally {
