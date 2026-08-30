@@ -37,6 +37,8 @@ export const Route = createFileRoute("/chat")({
   component: ChatPage,
 });
 
+const SUPPORT_ID = "support";
+
 function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
