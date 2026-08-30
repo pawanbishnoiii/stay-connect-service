@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { uploadAvatar } from "@/lib/avatar";
-import { registerPushDevice } from "@/lib/push";
+import { enablePush } from "@/lib/push";
 import { cn } from "@/lib/utils";
 
 const GENDERS = ["male", "female", "other"] as const;
@@ -67,12 +67,12 @@ export function ProfileSetupDialog() {
     }
   }
 
-  async function save() {
+  async function save(): Promise<void> {
     if (!user) return;
     const full = `${firstName.trim()} ${lastName.trim()}`.trim();
-    if (full.length < 3) return toast.error("Please enter your first and last name.");
-    if (!gender) return toast.error("Please select your gender.");
-    if (!/^[6-9]\d{9}$/.test(phone.trim())) return toast.error("Enter a valid 10-digit mobile number.");
+    if (full.length < 3) { toast.error("Please enter your first and last name."); return; }
+    if (!gender) { toast.error("Please select your gender."); return; }
+    if (!/^[6-9]\d{9}$/.test(phone.trim())) { toast.error("Enter a valid 10-digit mobile number."); return; }
 
     setSaving(true);
     const { error } = await supabase
@@ -92,7 +92,7 @@ export function ProfileSetupDialog() {
       toast.error(error.message);
       return;
     }
-    if (notify) void registerPushDevice(user.id).catch(() => undefined);
+    if (notify) void enablePush({ userId: user.id }).catch(() => undefined);
     await refresh();
     setOpen(false);
     toast.success("Profile saved");

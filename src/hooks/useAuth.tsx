@@ -10,6 +10,9 @@ type Profile = {
   full_name: string | null;
   avatar_url: string | null;
   phone: string | null;
+  gender: string | null;
+  needs_onboarding: boolean | null;
+  push_opted_in: boolean | null;
 };
 
 type AuthState = {
@@ -32,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadProfile = async (userId: string) => {
     const [{ data: prof }, { data: roles }] = await Promise.all([
-      supabase.from("profiles").select("id,email,full_name,avatar_url,phone").eq("id", userId).maybeSingle(),
+      supabase.from("profiles").select("id,email,full_name,avatar_url,phone,gender,needs_onboarding,push_opted_in").eq("id", userId).maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", userId),
     ]);
     setProfile((prof as Profile | null) ?? null);
