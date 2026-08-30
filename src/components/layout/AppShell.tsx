@@ -53,6 +53,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             </form>
 
             <div className="ml-auto flex items-center gap-2">
+              {role === "admin" ? (
+                <Link
+                  to="/admin"
+                  aria-label="Admin console"
+                  className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card"
+                >
+                  <Shield className="h-[18px] w-[18px] text-primary" />
+                </Link>
+              ) : null}
               <Link
                 to="/owner"
                 className="hidden rounded-full border border-primary px-4 py-2 text-sm font-semibold text-primary lg:block"
@@ -60,6 +69,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 List Your Property
               </Link>
               <Link
+
                 to="/chat"
                 search={{ c: "support" }}
                 aria-label="Messages and support"
