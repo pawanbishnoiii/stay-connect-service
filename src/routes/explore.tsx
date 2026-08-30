@@ -9,7 +9,7 @@ import { AppIcon } from "@/components/AppIcon";
 import { CATEGORY_ICON } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
-type ExploreSearch = { category: string; sort: "distance" | "rating" | "price_low" };
+type ExploreSearch = { category?: string; sort?: "distance" | "rating" | "price_low" };
 
 export const Route = createFileRoute("/explore")({
   validateSearch: (s: Record<string, unknown>): ExploreSearch => ({
@@ -46,7 +46,9 @@ const SORTS = [
 ] as const;
 
 function ExplorePage() {
-  const { category, sort } = useSearch({ from: "/explore" });
+  const search = useSearch({ from: "/explore" });
+  const category = search.category ?? "";
+  const sort = search.sort ?? "distance";
   const navigate = useNavigate();
   const { point, label } = useUserLocation();
 
@@ -140,7 +142,7 @@ function Chip({
   active: boolean;
   onClick: () => void;
   label: string;
-  icon?: string;
+  icon?: string | undefined;
 }) {
   return (
     <button

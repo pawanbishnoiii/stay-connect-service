@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/map")({
   validateSearch: (s: Record<string, unknown>) => ({
-    category: typeof s["category"] === "string" ? s["category"] : "",
+    category: typeof s["category"] === "string" ? s["category"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -33,7 +33,7 @@ export const Route = createFileRoute("/map")({
 });
 
 function MapPage() {
-  const { category } = useSearch({ from: "/map" });
+  const category = useSearch({ from: "/map" }).category ?? "";
   const navigate = useNavigate();
   const { point, label } = useUserLocation();
   const [activeId, setActiveId] = useState<string | null>(null);

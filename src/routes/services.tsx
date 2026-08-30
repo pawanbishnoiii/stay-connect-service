@@ -50,7 +50,7 @@ function ServicesPage() {
           <Link
             key={c.slug}
             to="/explore"
-            search={{ category: c.slug, sort: "distance" }}
+            search={{ category: c.slug }}
             className="group flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5 transition-shadow hover:shadow-md"
           >
             <AppIcon

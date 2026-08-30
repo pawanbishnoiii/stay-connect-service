@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ListingCard, ListingCardSkeleton } from "@/components/listing/ListingCard";
 import type { ListingWithDistance } from "@/lib/listings";
-import { distanceKm } from "@/lib/geo";
+import { haversineKm } from "@/lib/geo";
 import { useUserLocation } from "@/hooks/useLocation";
 
 export const Route = createFileRoute("/saved")({
@@ -46,7 +46,7 @@ function SavedPage() {
         category_slug: null,
         distance_km:
           r.lat != null && r.lng != null
-            ? distanceKm(point, { lat: Number(r.lat), lng: Number(r.lng) })
+            ? haversineKm(point, { lat: Number(r.lat), lng: Number(r.lng) })
             : null,
       })) as unknown as ListingWithDistance[];
     },

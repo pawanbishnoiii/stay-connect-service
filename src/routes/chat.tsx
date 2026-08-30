@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/chat")({
   validateSearch: (s: Record<string, unknown>) => ({
-    c: typeof s["c"] === "string" ? s["c"] : "",
+    c: typeof s["c"] === "string" ? s["c"] : undefined,
   }),
   head: () => ({
     meta: [
@@ -49,7 +49,7 @@ function timeAgo(iso: string) {
 
 function ChatPage() {
   const { user, loading } = useAuth();
-  const { c } = useSearch({ from: "/chat" });
+  const c = useSearch({ from: "/chat" }).c ?? "";
   const navigate = useNavigate();
   const qc = useQueryClient();
 
@@ -146,7 +146,7 @@ function ChatPage() {
               peerName={active.peerName}
               peerAvatar={active.peerAvatar}
               subtitle={active.listingTitle}
-              onBack={() => void navigate({ to: "/chat", search: { c: "" } })}
+              onBack={() => void navigate({ to: "/chat", search: {} })}
             />
           ) : (
             <div className="grid flex-1 place-items-center p-8 text-center text-sm text-muted-foreground">

@@ -74,7 +74,7 @@ function HomePage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={() => void navigate({ to: "/explore" })}
+              onClick={() => void navigate({ to: "/explore", search: {} })}
               className="inline-flex items-center gap-2 rounded-full bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm"
             >
               Explore Near You <ArrowRight className="h-4 w-4" />
@@ -123,6 +123,7 @@ function HomePage() {
           <Link
             key={l}
             to={to}
+            search={{}}
             className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5 transition-shadow hover:shadow-md"
           >
             <span className={`grid h-10 w-10 place-items-center rounded-xl ${tint}`}>
@@ -191,7 +192,7 @@ function Section({
         <h2 className="flex items-center gap-1.5 text-lg font-bold tracking-tight">
           {title} <MapPin className="h-4 w-4 text-primary" />
         </h2>
-        <Link to={href} className="text-sm font-semibold text-primary">
+        <Link to={href} search={{}} className="text-sm font-semibold text-primary">
           View all
         </Link>
       </div>

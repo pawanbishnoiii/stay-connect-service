@@ -9,13 +9,13 @@ import { CATEGORY_META } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
 type SearchParams = {
-  q: string;
-  category: string;
-  sort: "distance" | "rating" | "price_low";
-  maxPrice: number;
-  radius: number;
-  verified: boolean;
-  amenities: string;
+  q?: string;
+  category?: string;
+  sort?: "distance" | "rating" | "price_low";
+  maxPrice?: number;
+  radius?: number;
+  verified?: boolean;
+  amenities?: string;
 };
 
 export const Route = createFileRoute("/search")({
@@ -52,7 +52,16 @@ export const Route = createFileRoute("/search")({
 });
 
 function SearchPage() {
-  const params = useSearch({ from: "/search" });
+  const raw = useSearch({ from: "/search" });
+  const params = {
+    q: raw.q ?? "",
+    category: raw.category ?? "",
+    sort: raw.sort ?? ("distance" as const),
+    maxPrice: raw.maxPrice ?? 0,
+    radius: raw.radius ?? 25,
+    verified: raw.verified ?? false,
+    amenities: raw.amenities ?? "",
+  };
   const navigate = useNavigate();
   const { point, label } = useUserLocation();
   const [input, setInput] = useState(params.q);
