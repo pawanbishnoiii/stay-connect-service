@@ -102,10 +102,13 @@ const EMPTY_EDITOR: EditorState = {
   galleryFiles: [],
 };
 
-function OwnerPage() {
+export function OwnerDashboard({ tab = "overview" }: { tab?: TabId }) {
   const navigate = useNavigate();
   const { user, role, loading } = useAuth();
-  const [tab, setTab] = useState<TabId>("overview");
+  const setTab = (next: TabId) => {
+    const t = TABS.find((x) => x.id === next);
+    if (t) void navigate({ to: t.to });
+  };
   const [data, setData] = useState<{
     biz: Awaited<ReturnType<typeof fetchMyBusiness>>;
     categories: CategoryRow[];
