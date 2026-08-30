@@ -449,21 +449,44 @@ function ListingDetail() {
                   Chat
                 </Button>
               ) : null}
-              {listing.whatsapp ? (
-                <a href={`https://wa.me/${listing.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="flex-1">
+              {waNumber ? (
+                <a href={`https://wa.me/91${waNumber}`} target="_blank" rel="noreferrer" className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     WhatsApp
                   </Button>
                 </a>
               ) : null}
-              {listing.phone ? (
-                <a href={`tel:${listing.phone}`} className="flex-1">
+              {callNumber ? (
+                <a href={`tel:${callNumber}`} className="flex-1">
                   <Button type="button" variant="outline" className="w-full">
                     <Phone className="h-4 w-4" />
                     Call
                   </Button>
                 </a>
               ) : null}
+            </div>
+
+            <div className="mt-3 space-y-2">
+              <ScheduleVisit listingId={listing.id} ownerId={listing.owner_id} title={listing.title} />
+              <a href={mapsUrl} target="_blank" rel="noreferrer" className="block">
+                <Button type="button" variant="ghost" className="w-full">
+                  <ExternalLink className="h-4 w-4" /> View on Google Map
+                </Button>
+              </a>
+            </div>
+
+            <div className="mt-4 flex items-center gap-2 border-t border-border pt-3">
+              {owner?.avatar_url ? (
+                <img src={owner.avatar_url} alt="" className="h-8 w-8 rounded-full object-cover" />
+              ) : (
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                  {(owner?.full_name || "O").slice(0, 1).toUpperCase()}
+                </span>
+              )}
+              <span className="text-sm">
+                <span className="block text-xs text-muted-foreground">Listed by</span>
+                <span className="font-semibold">{owner?.full_name || "LocalSpot owner"}</span>
+              </span>
             </div>
           </div>
 
