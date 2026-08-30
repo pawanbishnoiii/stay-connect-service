@@ -8,14 +8,14 @@ const envVapid = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_VAPI
   | undefined;
 
 export type FirebaseWebConfig = {
-  apiKey?: string;
-  authDomain?: string;
-  projectId?: string;
-  storageBucket?: string;
-  messagingSenderId?: string;
-  appId?: string;
-  measurementId?: string;
-  vapidKey?: string;
+  apiKey?: string | undefined;
+  authDomain?: string | undefined;
+  projectId?: string | undefined;
+  storageBucket?: string | undefined;
+  messagingSenderId?: string | undefined;
+  appId?: string | undefined;
+  measurementId?: string | undefined;
+  vapidKey?: string | undefined;
 };
 
 /** Env/connector defaults — admins can override these from the Admin panel. */
