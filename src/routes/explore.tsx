@@ -9,15 +9,18 @@ import { AppIcon } from "@/components/AppIcon";
 import { CATEGORY_ICON } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
-type ExploreSearch = { category?: string; sort?: "distance" | "rating" | "price_low" };
+type ExploreSearch = {
+  category?: string | undefined;
+  sort?: "distance" | "rating" | "price_low" | undefined;
+};
 
 export const Route = createFileRoute("/explore")({
   validateSearch: (s: Record<string, unknown>): ExploreSearch => ({
-    category: typeof s["category"] === "string" ? s["category"] : "",
+    category: typeof s["category"] === "string" ? s["category"] : undefined,
     sort:
       s["sort"] === "rating" || s["sort"] === "price_low"
         ? (s["sort"] as ExploreSearch["sort"])
-        : "distance",
+        : undefined,
   }),
   head: () => ({
     meta: [

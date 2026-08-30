@@ -9,27 +9,27 @@ import { CATEGORY_META } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
 type SearchParams = {
-  q?: string;
-  category?: string;
-  sort?: "distance" | "rating" | "price_low";
-  maxPrice?: number;
-  radius?: number;
-  verified?: boolean;
-  amenities?: string;
+  q?: string | undefined;
+  category?: string | undefined;
+  sort?: "distance" | "rating" | "price_low" | undefined;
+  maxPrice?: number | undefined;
+  radius?: number | undefined;
+  verified?: boolean | undefined;
+  amenities?: string | undefined;
 };
 
 export const Route = createFileRoute("/search")({
   validateSearch: (s: Record<string, unknown>): SearchParams => ({
-    q: typeof s["q"] === "string" ? s["q"] : "",
-    category: typeof s["category"] === "string" ? s["category"] : "",
+    q: typeof s["q"] === "string" ? s["q"] : undefined,
+    category: typeof s["category"] === "string" ? s["category"] : undefined,
     sort:
       s["sort"] === "rating" || s["sort"] === "price_low"
         ? (s["sort"] as SearchParams["sort"])
-        : "distance",
-    maxPrice: Number(s["maxPrice"]) > 0 ? Number(s["maxPrice"]) : 0,
-    radius: Number(s["radius"]) > 0 ? Number(s["radius"]) : 25,
-    verified: s["verified"] === true || s["verified"] === "true",
-    amenities: typeof s["amenities"] === "string" ? s["amenities"] : "",
+        : undefined,
+    maxPrice: Number(s["maxPrice"]) > 0 ? Number(s["maxPrice"]) : undefined,
+    radius: Number(s["radius"]) > 0 ? Number(s["radius"]) : undefined,
+    verified: s["verified"] === true || s["verified"] === "true" ? true : undefined,
+    amenities: typeof s["amenities"] === "string" ? s["amenities"] : undefined,
   }),
   head: () => ({
     meta: [

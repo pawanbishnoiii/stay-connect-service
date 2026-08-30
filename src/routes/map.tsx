@@ -10,7 +10,7 @@ import { CATEGORY_META } from "@/lib/categories";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/map")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { category?: string | undefined } => ({
     category: typeof s["category"] === "string" ? s["category"] : undefined,
   }),
   head: () => ({

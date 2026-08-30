@@ -15,7 +15,7 @@ import { StackedList } from "@/components/ui/stacked-list";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/chat")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { c?: string | undefined } => ({
     c: typeof s["c"] === "string" ? s["c"] : undefined,
   }),
   head: () => ({
