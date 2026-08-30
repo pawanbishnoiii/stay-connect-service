@@ -54,35 +54,15 @@ import {
   type AmenityRow,
 } from "@/lib/owner";
 
-export const Route = createFileRoute("/_authenticated/owner")({
-  head: () => ({
-    meta: [
-      { title: "Owner Dashboard — LocalSpot" },
-      {
-        name: "description",
-        content: "Manage your listings, bookings, customers and finances on LocalSpot.",
-      },
-      { property: "og:title", content: "Owner Dashboard — LocalSpot" },
-      {
-        property: "og:description",
-        content: "Manage your listings, bookings, customers and finances on LocalSpot.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: OwnerPage,
-});
-
 const TABS = [
-  { id: "overview", label: "Overview", icon: "dashboard" },
-  { id: "listings", label: "Listings", icon: "my-listings" },
-  { id: "bookings", label: "Bookings", icon: "bookings" },
-  { id: "customers", label: "Customers", icon: "profile" },
-  { id: "finance", label: "Finance", icon: "balance" },
+  { id: "overview", label: "Overview", icon: "dashboard", to: "/owner" },
+  { id: "listings", label: "Listings", icon: "my-listings", to: "/owner/listings" },
+  { id: "bookings", label: "Bookings", icon: "bookings", to: "/owner/bookings" },
+  { id: "customers", label: "Customers", icon: "profile", to: "/owner/customers" },
+  { id: "finance", label: "Finance", icon: "balance", to: "/owner/finance" },
 ] as const;
 
-type TabId = (typeof TABS)[number]["id"];
+export type TabId = (typeof TABS)[number]["id"];
 
 type EditorState = {
   editingId: string | null;
