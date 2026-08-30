@@ -1,19 +1,23 @@
 import { useState, type ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Bell, Search, MapPin, ChevronDown } from "lucide-react";
+import { Bell, Search, MapPin, ChevronDown, Shield } from "lucide-react";
 import { DesktopSidebar } from "./DesktopSidebar";
 import { BottomNav } from "./BottomNav";
+import { Footer } from "./Footer";
 import { useUserLocation } from "@/hooks/useLocation";
 import { useAuth } from "@/hooks/useAuth";
+import { usePresence } from "@/hooks/usePresence";
 import { initials } from "@/lib/format";
 import { LocationPicker } from "@/components/LocationPicker";
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { label } = useUserLocation();
-  const { user, profile } = useAuth();
+  const { user, profile, role } = useAuth();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
+  usePresence();
+
 
   return (
     <div className="flex min-h-screen bg-background">
