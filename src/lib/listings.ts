@@ -46,7 +46,7 @@ export type ListingFilters = {
 const SELECT = `
   id, slug, title, description, cover_url, city, locality, address, lat, lng,
   price_current, price_original, price_unit, average_rating, total_reviews,
-  category_id, owner_id, is_verified, is_featured, phone, whatsapp, status,
+  category_id, owner_id, verification, is_featured, phone, whatsapp, status,
   categories:category_id ( slug, name )
 `;
 
