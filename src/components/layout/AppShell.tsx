@@ -56,8 +56,9 @@ export function AppShell({ children }: { children: ReactNode }) {
                 List Your Property
               </Link>
               <Link
-                to="/notifications"
-                aria-label="Notifications"
+                to="/chat"
+                search={{ c: "support" }}
+                aria-label="Messages and support"
                 className="grid h-10 w-10 place-items-center rounded-full border border-border bg-card"
               >
                 <Bell className="h-[18px] w-[18px]" />
