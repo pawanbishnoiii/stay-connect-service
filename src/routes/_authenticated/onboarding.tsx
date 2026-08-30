@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { reverseGeocodeDetail } from "@/lib/geo";
 import {
   fetchMyBusiness,
   upsertBusiness,
@@ -136,6 +137,7 @@ function OnboardingPage() {
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(true);
   const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [detecting, setDetecting] = useState(false);
 
   useEffect(() => {
     if (!user) return;
