@@ -58,8 +58,7 @@ export function LocationGate() {
     <>
       <Dialog open={open} onOpenChange={() => {}}>
         <DialogContent
-          showCloseButton={false}
-          className="max-w-sm overflow-hidden rounded-3xl border-border/70 p-0"
+          className="max-w-sm overflow-hidden rounded-3xl border-border/70 p-0 [&>button]:hidden"
         >
           <div className="brand-gradient relative px-6 pb-10 pt-8 text-center text-primary-foreground">
             <div className="dot-bg absolute inset-0 opacity-30" />
