@@ -129,7 +129,7 @@ function AuthPage() {
               ["places", "map"],
               ["orders", "bookings"],
               ["chat", "chat"],
-            ].map(([label, icon]) => (
+].map(([label, icon]: [string, string]) => (
               <div key={label} className="rounded-2xl bg-white/10 p-3 backdrop-blur">
                 <AppIcon name={icon} className="mx-auto h-8 w-8" />
                 <p className="mt-1.5 text-xs font-medium capitalize">{label}</p>
