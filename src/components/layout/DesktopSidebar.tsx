@@ -18,7 +18,7 @@ const LINKS = [
   { to: "/services", label: "Services", icon: LayoutDashboard },
   { to: "/saved", label: "Saved", icon: Heart },
   { to: "/chat", label: "Messages", icon: MessageCircle },
-  { to: "/notifications", label: "Notifications", icon: Bell },
+  
   { to: "/profile", label: "Profile", icon: User },
 ] as const;
 
