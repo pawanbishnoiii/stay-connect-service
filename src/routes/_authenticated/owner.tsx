@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowRight, Building2, Loader2, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -381,7 +382,7 @@ function OverviewTab({
             >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">
-                  {b.listing?.title ?? "Listing"} · {b.quantity}×
+                  {b.listings?.title ?? "Listing"} · {b.quantity}×
                 </p>
                 <p className="text-xs text-muted-foreground">{fmtDate(b.created_at)}</p>
               </div>
@@ -442,7 +443,7 @@ function ListingsTab({
       pincode: l.pincode ?? "",
       phone: l.phone ?? "",
       whatsapp: l.whatsapp ?? "",
-      amenityIds: (l.amenity_ids ?? []).map((a) => a.amenity_id),
+      amenityIds: [],
       coverFile: null,
       galleryFiles: [],
     });
@@ -847,7 +848,7 @@ function BookingsTab({
         >
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">
-              {b.listing?.title ?? "Listing"} · {b.quantity}×
+              {b.listings?.title ?? "Listing"} · {b.quantity}×
             </p>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {fmtDate(b.created_at)}
@@ -1058,7 +1059,7 @@ function FinanceTab({
       if (mode === "income") {
         await addLedgerEntry({
           owner_id: user.id,
-          entry_date: date || undefined,
+          entry_date: date || new Date().toISOString().slice(0, 10),
           kind: "income",
           category: category === "rent" ? "rent" : category,
           description: description || null,
@@ -1068,7 +1069,7 @@ function FinanceTab({
       } else {
         await addExpense({
           owner_id: user.id,
-          expense_date: date || undefined,
+          expense_date: date || new Date().toISOString().slice(0, 10),
           category,
           description: description || null,
           amount: Number(amount),
