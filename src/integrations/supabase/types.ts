@@ -2667,10 +2667,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_conversation_participant: {
-        Args: { _conversation: string }
-        Returns: boolean
-      }
       is_listing_owner: { Args: { _listing: string }; Returns: boolean }
       is_listing_public: { Args: { _listing: string }; Returns: boolean }
       nearby_listings: {
