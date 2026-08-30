@@ -102,12 +102,12 @@ export async function fetchCategories() {
 export async function fetchListingBySlug(slug: string) {
   const { data, error } = await supabase
     .from("listings")
-    .select(
+.select(
       `*, categories:category_id ( slug, name ),
-       listing_media ( id, url, media_type, sort_order ),
-       listing_plans ( id, name, price, duration_days, description, is_active ),
-       listing_services ( id, name, price, unit, description, is_active ),
-       offers ( id, title, description, discount_type, discount_value, valid_until, is_active )`,
+       listing_media ( id, url, media_type, is_cover, sort_order ),
+       listing_plans ( id, name, price, original_price, period, shift_name, start_time, end_time, features, is_active ),
+       listing_services ( id, name, price, price_unit, description, is_available, sort_order ),
+       offers ( id, title, description, discount_percent, discount_amount, offer_price, promo_code, badge, starts_at, ends_at, is_active )`,
     )
     .eq("slug", slug)
     .maybeSingle();
