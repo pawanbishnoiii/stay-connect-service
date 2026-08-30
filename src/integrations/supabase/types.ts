@@ -310,6 +310,8 @@ export type Database = {
       business_profiles: {
         Row: {
           about: string | null
+          accepted_refund_policy: boolean
+          accepted_terms: boolean
           address: string | null
           avatar_url: string | null
           average_rating: number
@@ -317,12 +319,14 @@ export type Database = {
           city: string | null
           created_at: string
           display_name: string
+          district: string | null
           email: string | null
           id: string
           instagram: string | null
           lat: number | null
           lng: number | null
           locality: string | null
+          location_confirmed: boolean
           onboarding_complete: boolean
           onboarding_step: number
           phone: string | null
@@ -336,11 +340,14 @@ export type Database = {
           updated_at: string
           user_id: string
           verification: Database["public"]["Enums"]["verification_state"]
+          village: string | null
           whatsapp: string | null
           youtube: string | null
         }
         Insert: {
           about?: string | null
+          accepted_refund_policy?: boolean
+          accepted_terms?: boolean
           address?: string | null
           avatar_url?: string | null
           average_rating?: number
@@ -348,12 +355,14 @@ export type Database = {
           city?: string | null
           created_at?: string
           display_name: string
+          district?: string | null
           email?: string | null
           id?: string
           instagram?: string | null
           lat?: number | null
           lng?: number | null
           locality?: string | null
+          location_confirmed?: boolean
           onboarding_complete?: boolean
           onboarding_step?: number
           phone?: string | null
@@ -367,11 +376,14 @@ export type Database = {
           updated_at?: string
           user_id: string
           verification?: Database["public"]["Enums"]["verification_state"]
+          village?: string | null
           whatsapp?: string | null
           youtube?: string | null
         }
         Update: {
           about?: string | null
+          accepted_refund_policy?: boolean
+          accepted_terms?: boolean
           address?: string | null
           avatar_url?: string | null
           average_rating?: number
@@ -379,12 +391,14 @@ export type Database = {
           city?: string | null
           created_at?: string
           display_name?: string
+          district?: string | null
           email?: string | null
           id?: string
           instagram?: string | null
           lat?: number | null
           lng?: number | null
           locality?: string | null
+          location_confirmed?: boolean
           onboarding_complete?: boolean
           onboarding_step?: number
           phone?: string | null
@@ -398,6 +412,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
           verification?: Database["public"]["Enums"]["verification_state"]
+          village?: string | null
           whatsapp?: string | null
           youtube?: string | null
         }
@@ -464,8 +479,12 @@ export type Database = {
           last_message_at: string
           listing_id: string | null
           owner_id: string
+          owner_read_at: string | null
+          owner_typing_at: string | null
           owner_unread: number
           student_id: string
+          student_read_at: string | null
+          student_typing_at: string | null
           student_unread: number
           updated_at: string
         }
@@ -476,8 +495,12 @@ export type Database = {
           last_message_at?: string
           listing_id?: string | null
           owner_id: string
+          owner_read_at?: string | null
+          owner_typing_at?: string | null
           owner_unread?: number
           student_id: string
+          student_read_at?: string | null
+          student_typing_at?: string | null
           student_unread?: number
           updated_at?: string
         }
@@ -488,8 +511,12 @@ export type Database = {
           last_message_at?: string
           listing_id?: string | null
           owner_id?: string
+          owner_read_at?: string | null
+          owner_typing_at?: string | null
           owner_unread?: number
           student_id?: string
+          student_read_at?: string | null
+          student_typing_at?: string | null
           student_unread?: number
           updated_at?: string
         }
@@ -1511,6 +1538,7 @@ export type Database = {
           is_read: boolean
           media_type: string
           media_url: string | null
+          read_at: string | null
           sender_id: string
         }
         Insert: {
@@ -1521,6 +1549,7 @@ export type Database = {
           is_read?: boolean
           media_type?: string
           media_url?: string | null
+          read_at?: string | null
           sender_id: string
         }
         Update: {
@@ -1531,6 +1560,7 @@ export type Database = {
           is_read?: boolean
           media_type?: string
           media_url?: string | null
+          read_at?: string | null
           sender_id?: string
         }
         Relationships: [
@@ -1727,32 +1757,47 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          city: string | null
           created_at: string
           email: string
           full_name: string
+          gender: string | null
           id: string
+          lat: number | null
+          lng: number | null
           needs_onboarding: boolean
           phone: string | null
+          push_opted_in: boolean
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          city?: string | null
           created_at?: string
           email: string
           full_name?: string
+          gender?: string | null
           id: string
+          lat?: number | null
+          lng?: number | null
           needs_onboarding?: boolean
           phone?: string | null
+          push_opted_in?: boolean
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          city?: string | null
           created_at?: string
           email?: string
           full_name?: string
+          gender?: string | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           needs_onboarding?: boolean
           phone?: string | null
+          push_opted_in?: boolean
           updated_at?: string
         }
         Relationships: []
