@@ -74,7 +74,7 @@ function ProfilePage() {
       <section className="rounded-2xl border border-border bg-card">
         <Row to="/saved" icon={Heart} label="Saved places" />
         <Row to="/chat" icon={MessageCircle} label="Messages" />
-        <Row to="/notifications" icon={Bell} label="Notifications & alerts" />
+        <Row to="/chat" icon={Bell} label="Support & alerts" />
         <Row to="/owner" icon={Store} label="Owner dashboard" />
       </section>
 
