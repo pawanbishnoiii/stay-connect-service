@@ -1,35 +1,77 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const appId = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_APP_ID'] as
+const envAppId = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_APP_ID'] as
   | string
   | undefined;
-const vapidKey = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_VAPID_KEY'] as
+const envVapid = import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_VAPID_KEY'] as
   | string
   | undefined;
 
-export const firebaseConfig = {
+export type FirebaseWebConfig = {
+  apiKey?: string | undefined;
+  authDomain?: string | undefined;
+  projectId?: string | undefined;
+  storageBucket?: string | undefined;
+  messagingSenderId?: string | undefined;
+  appId?: string | undefined;
+  measurementId?: string | undefined;
+  vapidKey?: string | undefined;
+};
+
+/** Env/connector defaults — admins can override these from the Admin panel. */
+export const firebaseConfig: FirebaseWebConfig = {
   apiKey: import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_WEB_API_KEY'] as
     | string
     | undefined,
   projectId: import.meta.env['VITE_LOVABLE_CONNECTOR_FIREBASE_MESSAGING_PROJECT_ID'] as
     | string
     | undefined,
-  appId,
-  messagingSenderId: appId?.split(":")[1] ?? "",
+  appId: envAppId,
+  messagingSenderId: envAppId?.split(":")[1] ?? "",
+  vapidKey: envVapid,
 };
+
+export const FIREBASE_SETTING_KEY = "firebase_web_config";
+
+let cached: FirebaseWebConfig | null = null;
+
+function clean(cfg: FirebaseWebConfig): FirebaseWebConfig {
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(cfg)) if (typeof v === "string" && v.trim()) out[k] = v.trim();
+  return out as FirebaseWebConfig;
+}
+
+/** Admin-managed config from the database, falling back to connector env values. */
+export async function resolveFirebaseConfig(force = false): Promise<FirebaseWebConfig> {
+  if (cached && !force) return cached;
+  let override: FirebaseWebConfig = {};
+  try {
+    const { data } = await supabase
+      .from("admin_settings")
+      .select("value")
+      .eq("key", FIREBASE_SETTING_KEY)
+      .maybeSingle();
+    if (data?.value && typeof data.value === "object") override = data.value as FirebaseWebConfig;
+  } catch {
+    /* offline or blocked — fall back to env */
+  }
+  const merged = clean({ ...firebaseConfig, ...override });
+  if (!merged.messagingSenderId && merged.appId) merged.messagingSenderId = merged.appId.split(":")[1];
+  cached = merged;
+  return merged;
+}
+
+export function isConfigComplete(cfg: FirebaseWebConfig): boolean {
+  return Boolean(cfg.apiKey && cfg.projectId && cfg.appId && cfg.messagingSenderId && cfg.vapidKey);
+}
 
 export type PushResult =
   | { status: "registered"; token: string }
   | { status: "not-configured" | "unsupported" | "open-in-new-tab" | "denied" };
 
+/** Sync check against env defaults (or the last resolved admin config). */
 export function pushConfigured(): boolean {
-  return Boolean(
-    firebaseConfig.apiKey &&
-      firebaseConfig.projectId &&
-      firebaseConfig.appId &&
-      firebaseConfig.messagingSenderId &&
-      vapidKey,
-  );
+  return isConfigComplete(cached ?? firebaseConfig);
 }
 
 /** Must be called from a user gesture. Registers the browser for FCM push. */
@@ -39,7 +81,8 @@ export async function enablePush(opts?: {
   lat?: number | null;
   lng?: number | null;
 }): Promise<PushResult> {
-  if (!pushConfigured()) return { status: "not-configured" };
+  const cfg = await resolveFirebaseConfig();
+  if (!isConfigComplete(cfg)) return { status: "not-configured" };
 
   const { isSupported, getMessaging, getToken } = await import("firebase/messaging");
   if (!("Notification" in window) || !(await isSupported())) return { status: "unsupported" };
@@ -49,12 +92,11 @@ export async function enablePush(opts?: {
     Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
   if (permission !== "granted") return { status: "denied" };
 
+  const { vapidKey, ...appCfg } = cfg;
   const { initializeApp, getApps, getApp } = await import("firebase/app");
-  const query = new URLSearchParams(firebaseConfig as Record<string, string>).toString();
+  const query = new URLSearchParams(appCfg as Record<string, string>).toString();
   const registration = await navigator.serviceWorker.register(`/firebase-messaging-sw.js?${query}`);
-  const app = getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig as Record<string, string>);
+  const app = getApps().length ? getApp() : initializeApp(appCfg as Record<string, string>);
   const token = await getToken(getMessaging(app), {
     vapidKey: vapidKey!,
     serviceWorkerRegistration: registration,
@@ -96,12 +138,12 @@ export function pushStatusMessage(status: PushResult["status"]): string {
 
 /** Listen for messages while the app is in the foreground. */
 export async function onForegroundPush(cb: (payload: unknown) => void): Promise<() => void> {
-  if (!pushConfigured()) return () => {};
+  const cfg = await resolveFirebaseConfig();
+  if (!isConfigComplete(cfg)) return () => {};
   const { isSupported, getMessaging, onMessage } = await import("firebase/messaging");
   if (!(await isSupported())) return () => {};
+  const { vapidKey: _v, ...appCfg } = cfg;
   const { initializeApp, getApps, getApp } = await import("firebase/app");
-  const app = getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig as Record<string, string>);
+  const app = getApps().length ? getApp() : initializeApp(appCfg as Record<string, string>);
   return onMessage(getMessaging(app), cb);
 }

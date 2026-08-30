@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { ArrowRight, Building2, Loader2, Pencil, Plus, RefreshCw, Trash2 } from "lucide-react";
@@ -54,35 +54,15 @@ import {
   type AmenityRow,
 } from "@/lib/owner";
 
-export const Route = createFileRoute("/_authenticated/owner")({
-  head: () => ({
-    meta: [
-      { title: "Owner Dashboard — LocalSpot" },
-      {
-        name: "description",
-        content: "Manage your listings, bookings, customers and finances on LocalSpot.",
-      },
-      { property: "og:title", content: "Owner Dashboard — LocalSpot" },
-      {
-        property: "og:description",
-        content: "Manage your listings, bookings, customers and finances on LocalSpot.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: OwnerPage,
-});
-
 const TABS = [
-  { id: "overview", label: "Overview", icon: "dashboard" },
-  { id: "listings", label: "Listings", icon: "my-listings" },
-  { id: "bookings", label: "Bookings", icon: "bookings" },
-  { id: "customers", label: "Customers", icon: "profile" },
-  { id: "finance", label: "Finance", icon: "balance" },
+  { id: "overview", label: "Overview", icon: "dashboard", to: "/owner" },
+  { id: "listings", label: "Listings", icon: "my-listings", to: "/owner/listings" },
+  { id: "bookings", label: "Bookings", icon: "bookings", to: "/owner/bookings" },
+  { id: "customers", label: "Customers", icon: "profile", to: "/owner/customers" },
+  { id: "finance", label: "Finance", icon: "balance", to: "/owner/finance" },
 ] as const;
 
-type TabId = (typeof TABS)[number]["id"];
+export type TabId = (typeof TABS)[number]["id"];
 
 type EditorState = {
   editingId: string | null;
@@ -122,10 +102,13 @@ const EMPTY_EDITOR: EditorState = {
   galleryFiles: [],
 };
 
-function OwnerPage() {
+export function OwnerDashboard({ tab = "overview" }: { tab?: TabId }) {
   const navigate = useNavigate();
   const { user, role, loading } = useAuth();
-  const [tab, setTab] = useState<TabId>("overview");
+  const setTab = (next: TabId) => {
+    const t = TABS.find((x) => x.id === next);
+    if (t) void navigate({ to: t.to });
+  };
   const [data, setData] = useState<{
     biz: Awaited<ReturnType<typeof fetchMyBusiness>>;
     categories: CategoryRow[];

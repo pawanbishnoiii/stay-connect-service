@@ -21,8 +21,12 @@ import { Route as SearchRouteImport } from './routes/search'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
-import { Route as AuthenticatedOwnerRouteImport } from './routes/_authenticated/owner'
 import { Route as ListingSlugRouteImport } from './routes/listing.$slug'
+import { Route as AuthenticatedOwnerIndexRouteImport } from './routes/_authenticated/owner/index'
+import { Route as AuthenticatedOwnerBookingsRouteImport } from './routes/_authenticated/owner/bookings'
+import { Route as AuthenticatedOwnerCustomersRouteImport } from './routes/_authenticated/owner/customers'
+import { Route as AuthenticatedOwnerFinanceRouteImport } from './routes/_authenticated/owner/finance'
+import { Route as AuthenticatedOwnerListingsRouteImport } from './routes/_authenticated/owner/listings'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -83,16 +87,40 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedOwnerRoute = AuthenticatedOwnerRouteImport.update({
-  id: '/owner',
-  path: '/owner',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const ListingSlugRoute = ListingSlugRouteImport.update({
   id: '/listing/$slug',
   path: '/listing/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedOwnerIndexRoute = AuthenticatedOwnerIndexRouteImport.update({
+  id: '/owner/',
+  path: '/owner/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOwnerBookingsRoute =
+  AuthenticatedOwnerBookingsRouteImport.update({
+    id: '/owner/bookings',
+    path: '/owner/bookings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOwnerCustomersRoute =
+  AuthenticatedOwnerCustomersRouteImport.update({
+    id: '/owner/customers',
+    path: '/owner/customers',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOwnerFinanceRoute =
+  AuthenticatedOwnerFinanceRouteImport.update({
+    id: '/owner/finance',
+    path: '/owner/finance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOwnerListingsRoute =
+  AuthenticatedOwnerListingsRouteImport.update({
+    id: '/owner/listings',
+    path: '/owner/listings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -106,8 +134,12 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/owner': typeof AuthenticatedOwnerRoute
   '/listing/$slug': typeof ListingSlugRoute
+  '/owner/bookings': typeof AuthenticatedOwnerBookingsRoute
+  '/owner/customers': typeof AuthenticatedOwnerCustomersRoute
+  '/owner/finance': typeof AuthenticatedOwnerFinanceRoute
+  '/owner/listings': typeof AuthenticatedOwnerListingsRoute
+  '/owner/': typeof AuthenticatedOwnerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -121,8 +153,12 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/owner': typeof AuthenticatedOwnerRoute
   '/listing/$slug': typeof ListingSlugRoute
+  '/owner/bookings': typeof AuthenticatedOwnerBookingsRoute
+  '/owner/customers': typeof AuthenticatedOwnerCustomersRoute
+  '/owner/finance': typeof AuthenticatedOwnerFinanceRoute
+  '/owner/listings': typeof AuthenticatedOwnerListingsRoute
+  '/owner': typeof AuthenticatedOwnerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -138,8 +174,12 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
-  '/_authenticated/owner': typeof AuthenticatedOwnerRoute
   '/listing/$slug': typeof ListingSlugRoute
+  '/_authenticated/owner/bookings': typeof AuthenticatedOwnerBookingsRoute
+  '/_authenticated/owner/customers': typeof AuthenticatedOwnerCustomersRoute
+  '/_authenticated/owner/finance': typeof AuthenticatedOwnerFinanceRoute
+  '/_authenticated/owner/listings': typeof AuthenticatedOwnerListingsRoute
+  '/_authenticated/owner/': typeof AuthenticatedOwnerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -155,8 +195,12 @@ export interface FileRouteTypes {
     | '/services'
     | '/admin'
     | '/onboarding'
-    | '/owner'
     | '/listing/$slug'
+    | '/owner/bookings'
+    | '/owner/customers'
+    | '/owner/finance'
+    | '/owner/listings'
+    | '/owner/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -170,8 +214,12 @@ export interface FileRouteTypes {
     | '/services'
     | '/admin'
     | '/onboarding'
-    | '/owner'
     | '/listing/$slug'
+    | '/owner/bookings'
+    | '/owner/customers'
+    | '/owner/finance'
+    | '/owner/listings'
+    | '/owner'
   id:
     | '__root__'
     | '/'
@@ -186,8 +234,12 @@ export interface FileRouteTypes {
     | '/services'
     | '/_authenticated/admin'
     | '/_authenticated/onboarding'
-    | '/_authenticated/owner'
     | '/listing/$slug'
+    | '/_authenticated/owner/bookings'
+    | '/_authenticated/owner/customers'
+    | '/_authenticated/owner/finance'
+    | '/_authenticated/owner/listings'
+    | '/_authenticated/owner/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -290,13 +342,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/owner': {
-      id: '/_authenticated/owner'
-      path: '/owner'
-      fullPath: '/owner'
-      preLoaderRoute: typeof AuthenticatedOwnerRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/listing/$slug': {
       id: '/listing/$slug'
       path: '/listing/$slug'
@@ -304,19 +349,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ListingSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/owner/': {
+      id: '/_authenticated/owner/'
+      path: '/owner'
+      fullPath: '/owner/'
+      preLoaderRoute: typeof AuthenticatedOwnerIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/owner/bookings': {
+      id: '/_authenticated/owner/bookings'
+      path: '/owner/bookings'
+      fullPath: '/owner/bookings'
+      preLoaderRoute: typeof AuthenticatedOwnerBookingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/owner/customers': {
+      id: '/_authenticated/owner/customers'
+      path: '/owner/customers'
+      fullPath: '/owner/customers'
+      preLoaderRoute: typeof AuthenticatedOwnerCustomersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/owner/finance': {
+      id: '/_authenticated/owner/finance'
+      path: '/owner/finance'
+      fullPath: '/owner/finance'
+      preLoaderRoute: typeof AuthenticatedOwnerFinanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/owner/listings': {
+      id: '/_authenticated/owner/listings'
+      path: '/owner/listings'
+      fullPath: '/owner/listings'
+      preLoaderRoute: typeof AuthenticatedOwnerListingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
-  AuthenticatedOwnerRoute: typeof AuthenticatedOwnerRoute
+  AuthenticatedOwnerBookingsRoute: typeof AuthenticatedOwnerBookingsRoute
+  AuthenticatedOwnerCustomersRoute: typeof AuthenticatedOwnerCustomersRoute
+  AuthenticatedOwnerFinanceRoute: typeof AuthenticatedOwnerFinanceRoute
+  AuthenticatedOwnerListingsRoute: typeof AuthenticatedOwnerListingsRoute
+  AuthenticatedOwnerIndexRoute: typeof AuthenticatedOwnerIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
-  AuthenticatedOwnerRoute: AuthenticatedOwnerRoute,
+  AuthenticatedOwnerBookingsRoute: AuthenticatedOwnerBookingsRoute,
+  AuthenticatedOwnerCustomersRoute: AuthenticatedOwnerCustomersRoute,
+  AuthenticatedOwnerFinanceRoute: AuthenticatedOwnerFinanceRoute,
+  AuthenticatedOwnerListingsRoute: AuthenticatedOwnerListingsRoute,
+  AuthenticatedOwnerIndexRoute: AuthenticatedOwnerIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

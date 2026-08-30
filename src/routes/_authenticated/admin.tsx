@@ -29,6 +29,12 @@ import {
   timeAgo,
 } from "@/lib/admin";
 import { sendAdminPush } from "@/lib/push.functions";
+import {
+  FIREBASE_SETTING_KEY,
+  firebaseConfig,
+  resolveFirebaseConfig,
+  type FirebaseWebConfig,
+} from "@/lib/push";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
@@ -438,6 +444,8 @@ function SettingsTab() {
         </Button>
       </div>
 
+      <FirebaseCard onSave={save} />
+
       <div className="space-y-3 rounded-2xl border border-border p-4 lg:col-span-2">
         <div className="flex items-center justify-between">
           <h2 className="font-bold">Email (SMTP)</h2>
@@ -467,5 +475,59 @@ function SettingsTab() {
         <Button onClick={() => sv && void save("smtp", sv)}>Save email settings</Button>
       </div>
     </section>
+  );
+}
+
+/* --------------------------- firebase web config -------------------------- */
+
+const FIREBASE_FIELDS = [
+  ["apiKey", "API key"],
+  ["authDomain", "Auth domain"],
+  ["projectId", "Project ID"],
+  ["storageBucket", "Storage bucket"],
+  ["messagingSenderId", "Messaging sender ID"],
+  ["appId", "App ID"],
+  ["measurementId", "Measurement ID"],
+  ["vapidKey", "Web push VAPID key"],
+] as const;
+
+function FirebaseCard({ onSave }: { onSave: (key: string, value: unknown) => Promise<void> }) {
+  const q = useQuery({
+    queryKey: ["admin-setting", FIREBASE_SETTING_KEY],
+    queryFn: () => getSetting<FirebaseWebConfig>(FIREBASE_SETTING_KEY, {}),
+  });
+  const [draft, setDraft] = useState<FirebaseWebConfig | null>(null);
+  const v = draft ?? q.data ?? {};
+
+  return (
+    <div className="space-y-3 rounded-2xl border border-border p-4 lg:col-span-2">
+      <div>
+        <h2 className="font-bold">Firebase web push config</h2>
+        <p className="text-xs text-muted-foreground">
+          Leave a field empty to use the connected Firebase project value.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {FIREBASE_FIELDS.map(([key, label]) => (
+          <div key={key} className="space-y-1.5">
+            <Label htmlFor={`fb-${key}`}>{label}</Label>
+            <Input
+              id={`fb-${key}`}
+              value={v[key] ?? ""}
+              placeholder={firebaseConfig[key] ? "Using connected value" : ""}
+              onChange={(e) => setDraft({ ...v, [key]: e.target.value })}
+            />
+          </div>
+        ))}
+      </div>
+      <Button
+        onClick={async () => {
+          await onSave(FIREBASE_SETTING_KEY, v);
+          await resolveFirebaseConfig(true);
+        }}
+      >
+        Save Firebase config
+      </Button>
+    </div>
   );
 }
