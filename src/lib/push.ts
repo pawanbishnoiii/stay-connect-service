@@ -81,7 +81,8 @@ export async function enablePush(opts?: {
   lat?: number | null;
   lng?: number | null;
 }): Promise<PushResult> {
-  if (!pushConfigured()) return { status: "not-configured" };
+  const cfg = await resolveFirebaseConfig();
+  if (!isConfigComplete(cfg)) return { status: "not-configured" };
 
   const { isSupported, getMessaging, getToken } = await import("firebase/messaging");
   if (!("Notification" in window) || !(await isSupported())) return { status: "unsupported" };
@@ -91,12 +92,11 @@ export async function enablePush(opts?: {
     Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
   if (permission !== "granted") return { status: "denied" };
 
+  const { vapidKey, ...appCfg } = cfg;
   const { initializeApp, getApps, getApp } = await import("firebase/app");
-  const query = new URLSearchParams(firebaseConfig as Record<string, string>).toString();
+  const query = new URLSearchParams(appCfg as Record<string, string>).toString();
   const registration = await navigator.serviceWorker.register(`/firebase-messaging-sw.js?${query}`);
-  const app = getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig as Record<string, string>);
+  const app = getApps().length ? getApp() : initializeApp(appCfg as Record<string, string>);
   const token = await getToken(getMessaging(app), {
     vapidKey: vapidKey!,
     serviceWorkerRegistration: registration,
