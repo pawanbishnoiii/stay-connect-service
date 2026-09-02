@@ -51,7 +51,7 @@ export default function LeafletMap({
   activeId?: string | null;
   onSelect?: (id: string) => void;
   zoom?: number;
-  route?: Array<[number, number]>;
+  route?: Array<[number, number]> | undefined;
 }) {
   return (
     <MapContainer center={[center.lat, center.lng]} zoom={zoom} scrollWheelZoom className="h-full w-full">
