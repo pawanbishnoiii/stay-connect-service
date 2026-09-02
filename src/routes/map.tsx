@@ -128,11 +128,12 @@ function MapPage() {
             {isPending ? "Loading…" : `${listings.length} places on map`}
           </p>
           {listings.map((l) => (
-            <button
+            <Link
               key={l.id}
-              type="button"
+              to="/listing/$slug"
+              params={{ slug: l.slug }}
               onMouseEnter={() => setActiveId(l.id)}
-              onClick={() => setActiveId(l.id)}
+              onFocus={() => setActiveId(l.id)}
               className={cn(
                 "flex w-full items-center gap-3 rounded-2xl border p-2.5 text-left transition-colors",
                 activeId === l.id ? "border-primary bg-primary/5" : "border-border bg-card",
