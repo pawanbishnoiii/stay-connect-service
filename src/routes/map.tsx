@@ -155,7 +155,7 @@ function MapPage() {
                   <Star className="h-3 w-3 fill-current" /> {Number(l.average_rating ?? 0).toFixed(1)}
                 </span>
               </span>
-            </button>
+            </Link>
           ))}
         </aside>
       </div>
