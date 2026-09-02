@@ -26,7 +26,7 @@ const youPin = L.divIcon({
   iconAnchor: [9, 9],
 });
 
-function Recenter({ center, route }: { center: LatLng; route?: Array<[number, number]> }) {
+function Recenter({ center, route }: { center: LatLng; route?: Array<[number, number]> | undefined }) {
   const map = useMap();
   useEffect(() => {
     if (route && route.length > 1) {
