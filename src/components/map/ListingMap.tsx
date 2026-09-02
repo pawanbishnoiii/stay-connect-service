@@ -13,6 +13,7 @@ export function ListingMap(props: {
   activeId?: string | null;
   onSelect?: (id: string) => void;
   zoom?: number;
+  route?: Array<[number, number]> | undefined;
 }) {
   return (
     <ClientOnly fallback={<Fallback />}>
