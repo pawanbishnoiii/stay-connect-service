@@ -435,10 +435,18 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          is_service: boolean
           kind: string
           name: string
+          seo_description: string | null
+          seo_title: string | null
+          show_on_home: boolean
           slug: string
           sort_order: number
+          supports_booking: boolean
+          supports_delivery: boolean
+          supports_location: boolean
+          supports_pickup: boolean
           updated_at: string
         }
         Insert: {
@@ -449,10 +457,18 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_service?: boolean
           kind?: string
           name: string
+          seo_description?: string | null
+          seo_title?: string | null
+          show_on_home?: boolean
           slug: string
           sort_order?: number
+          supports_booking?: boolean
+          supports_delivery?: boolean
+          supports_location?: boolean
+          supports_pickup?: boolean
           updated_at?: string
         }
         Update: {
@@ -463,10 +479,18 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          is_service?: boolean
           kind?: string
           name?: string
+          seo_description?: string | null
+          seo_title?: string | null
+          show_on_home?: boolean
           slug?: string
           sort_order?: number
+          supports_booking?: boolean
+          supports_delivery?: boolean
+          supports_location?: boolean
+          supports_pickup?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -1839,57 +1863,151 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age: number | null
           avatar_url: string | null
           city: string | null
           created_at: string
           email: string
+          first_name: string | null
           full_name: string
           gender: string | null
           id: string
+          last_name: string | null
           last_seen_at: string | null
           lat: number | null
           lng: number | null
           needs_onboarding: boolean
           phone: string | null
+          profile_completed: boolean
           push_opted_in: boolean
           total_seconds: number
           updated_at: string
         }
         Insert: {
+          age?: number | null
           avatar_url?: string | null
           city?: string | null
           created_at?: string
           email: string
+          first_name?: string | null
           full_name?: string
           gender?: string | null
           id: string
+          last_name?: string | null
           last_seen_at?: string | null
           lat?: number | null
           lng?: number | null
           needs_onboarding?: boolean
           phone?: string | null
+          profile_completed?: boolean
           push_opted_in?: boolean
           total_seconds?: number
           updated_at?: string
         }
         Update: {
+          age?: number | null
           avatar_url?: string | null
           city?: string | null
           created_at?: string
           email?: string
+          first_name?: string | null
           full_name?: string
           gender?: string | null
           id?: string
+          last_name?: string | null
           last_seen_at?: string | null
           lat?: number | null
           lng?: number | null
           needs_onboarding?: boolean
           phone?: string | null
+          profile_completed?: boolean
           push_opted_in?: boolean
           total_seconds?: number
           updated_at?: string
         }
         Relationships: []
+      }
+      property_stays: {
+        Row: {
+          amount_paid: number
+          bed_id: string | null
+          check_in: string
+          check_out: string
+          created_at: string
+          guest_name: string
+          guest_phone: string
+          id: string
+          library_id: string
+          notes: string | null
+          owner_id: string
+          payment_status: string
+          room_id: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_paid?: number
+          bed_id?: string | null
+          check_in: string
+          check_out: string
+          created_at?: string
+          guest_name: string
+          guest_phone: string
+          id?: string
+          library_id: string
+          notes?: string | null
+          owner_id: string
+          payment_status?: string
+          room_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_paid?: number
+          bed_id?: string | null
+          check_in?: string
+          check_out?: string
+          created_at?: string
+          guest_name?: string
+          guest_phone?: string
+          id?: string
+          library_id?: string
+          notes?: string | null
+          owner_id?: string
+          payment_status?: string
+          room_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_stays_bed_id_fkey"
+            columns: ["bed_id"]
+            isOneToOne: false
+            referencedRelation: "beds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_stays_library_id_fkey"
+            columns: ["library_id"]
+            isOneToOne: false
+            referencedRelation: "libraries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "property_stays_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       push_campaigns: {
         Row: {
@@ -2177,10 +2295,75 @@ export type Database = {
           },
         ]
       }
-      rooms: {
+      room_issues: {
         Row: {
           created_at: string
+          details: string | null
+          id: string
+          issue_type: string
+          library_id: string
+          owner_id: string
+          priority: string
+          reported_at: string
+          resolved_at: string | null
+          room_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          issue_type?: string
+          library_id: string
+          owner_id: string
+          priority?: string
+          reported_at?: string
+          resolved_at?: string | null
+          room_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: string
+          issue_type?: string
+          library_id?: string
+          owner_id?: string
+          priority?: string
+          reported_at?: string
+          resolved_at?: string | null
+          room_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "room_issues_library_id_fkey"
+            columns: ["library_id"]
+            isOneToOne: false
+            referencedRelation: "libraries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "room_issues_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rooms: {
+        Row: {
+          cleaning_status: string
+          created_at: string
           current_occupancy: number
+          double_price: number | null
           extra_requirements: string | null
           floor_number: number | null
           has_ac: boolean | null
@@ -2197,15 +2380,20 @@ export type Database = {
           max_persons: number
           monthly_price: number
           name: string
+          operational_status: string
           permissions: string | null
           policies: string | null
           price_per_bed: number
           room_type: string
+          single_price: number | null
+          triple_price: number | null
           updated_at: string
         }
         Insert: {
+          cleaning_status?: string
           created_at?: string
           current_occupancy?: number
+          double_price?: number | null
           extra_requirements?: string | null
           floor_number?: number | null
           has_ac?: boolean | null
@@ -2222,15 +2410,20 @@ export type Database = {
           max_persons?: number
           monthly_price?: number
           name: string
+          operational_status?: string
           permissions?: string | null
           policies?: string | null
           price_per_bed?: number
           room_type?: string
+          single_price?: number | null
+          triple_price?: number | null
           updated_at?: string
         }
         Update: {
+          cleaning_status?: string
           created_at?: string
           current_occupancy?: number
+          double_price?: number | null
           extra_requirements?: string | null
           floor_number?: number | null
           has_ac?: boolean | null
@@ -2247,10 +2440,13 @@ export type Database = {
           max_persons?: number
           monthly_price?: number
           name?: string
+          operational_status?: string
           permissions?: string | null
           policies?: string | null
           price_per_bed?: number
           room_type?: string
+          single_price?: number | null
+          triple_price?: number | null
           updated_at?: string
         }
         Relationships: [
